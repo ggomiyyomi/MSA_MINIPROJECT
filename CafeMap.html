@@ -1,26 +1,186 @@
 <!DOCTYPE html>
 <html lang="ko" data-bs-theme="light">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>나의 취미 & 추억 – 원페이지</title>
 
-  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Font Awesome (SNS 아이콘용) -->
-  <!-- Font Awesome 6 (최신) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
+  <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=f3c9f0ec8669c2333a8b6964f82e24ae&libraries=services"></script>
 
   <style>
-    
+    #map {
+      width: 100%;
+      height: 70vh;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .cafe-card {
+      background: #fff;
+      border-radius: 15px;
+      padding: 1rem 1.2rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      transition: transform .2s, background-color .2s;
+    }
+    .cafe-card:hover {
+      transform: translateY(-3px);
+      cursor: pointer;
+    }
+    .cafe-card.active-card {
+      background: #f0d8ca;
+      box-shadow: 0 3px 8px #bc8365;
+    }
+    .overlay-label {
+      opacity: 1;
+      transform: translateY(10px);
+    }
+
+  #searchBtn {
+    background: #f7e0d2;
+    border: none;
+    color: #5a3a28;
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 0.45rem 0.9rem;
+    box-shadow: 0 2px 6px rgba(90, 58, 40, 0.15);
+    transition: all .2s ease;
+  }
+  #searchBtn:hover {
+    background: #e4c2a9;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(90, 58, 40, 0.25);
+  }
+
+  #myLocationBtn {
+    background: #bc8365;
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 0.45rem 0.9rem;
+    box-shadow: 0 2px 6px rgba(90, 58, 40, 0.15);
+    transition: all .2s ease;
+  }
+  #myLocationBtn:hover {
+    background: #9c6547;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(90, 58, 40, 0.25);
+  }
+
+  /* 아이콘 살짝 여백 */
+  #searchBtn i, #myLocationBtn i {
+    margin-right: 4px;
+  }
+
+
+  /* 투어 박스 전체 */
+.route-card {
+  border: 1px solid #e5d1c4;
+  border-radius: 15px;
+  background: #fff;
+}
+
+  .route-card > h4 {
+    padding: 0px 20px 20px 20px;
+    border-bottom: 1px solid #e5d1c4;
+  }
+
+/* 입력칸 가로정렬 */
+.route-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 입력칸 스타일 */
+.route-input {
+  flex: 1;
+  border-radius: 10px;
+  border: 1px solid #e3c7b7;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  background: #fdfaf7;
+}
+
+/* 사이에 들어가는 아이콘 */
+.route-separator {
+  color: #c49a7a;
+  font-size: 1.2rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* 결과줄 */
+.route-result {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.95rem;
+  color: #6c4c3a;
+}
+
+
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .scroll-area::-webkit-scrollbar {
+      width: 8px;
+    }
+    .scroll-area::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #e8c0ab, #d18f6b);
+      border-radius: 4px;
+    }
+    .scroll-area::-webkit-scrollbar-track {
+      background: none;
+      border-radius: 4px;
+    }
+    /* 🌙 다크모드 전용 스타일 */
+    :root[data-bs-theme="dark"] body {
+    background-color: #1e1e1e;
+    color: #f5f5f5;
+    }
+
+    :root[data-bs-theme="dark"] .bg-body-tertiary {
+    background-color: #2c2c2c !important;
+    }
+
+    :root[data-bs-theme="dark"] .cafe-card {
+    background: #2b2b2b;
+    color: #f1f1f1;
+    box-shadow: 0 2px 6px rgba(255, 255, 255, 0.08);
+    }
+
+    :root[data-bs-theme="dark"] .cafe-card.active-card {
+    background: #a47054;
+    box-shadow: 0 3px 8px #e8c0ab;
+    }
+
+    :root[data-bs-theme="dark"] .cafe-card .small.text-muted {
+    color: #dad8d8 !important;
+    }
+
+    :root[data-bs-theme="dark"] #searchBtn {
+    background: #a47054;
+    color: #fff;
+    }
+
+    :root[data-bs-theme="dark"] #myLocationBtn {
+    background: #d8b9a5;
+    color: #3c2a20;
+    }
+
+    :root[data-bs-theme="dark"] .scroll-area::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #e8c0ab, #d18f6b);
+    }
   </style>
+  
 </head>
 
 <body>
-
   <!-- Nav -->
   <nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top shadow-sm">
     <div class="container">
@@ -45,11 +205,207 @@
     </div>
   </nav>
 
+  <section id="guestbook" class="container py-5">
+    <h2 class="mb-4 text-center">🥯🧁🥐 Bakery CAFE 🥨🍪🍰</h2>
 
-  <!-- Bootstrap JS -->
+    <div class="d-flex justify-content-end gap-2 mb-3">
+      <button id="searchBtn" class="btn btn-outline-danger btn-sm">
+        <i class="fa-solid fa-location-crosshairs me-1"></i> 현 지도에서 검색
+      </button>
+      <button id="myLocationBtn" class="btn btn-outline-primary btn-sm">
+        <i class="fa-solid fa-street-view me-1"></i> 내 위치
+      </button>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div id="map"></div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="bg-body-tertiary rounded-4 p-4 shadow-sm scroll-area"
+             style="max-height:70vh; overflow-y:auto;">
+          <h4 class="fw-bold mb-4"><i class="fa-solid fa-mug-hot me-2"></i>Bakery CAFE</h4>
+          <div id="cafeList" class="d-flex flex-column gap-3"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 🚗 Bakery CAFE 투어 -->
+<section id="routeSection" class="container my-5">
+  <div class="route-card shadow-sm p-4">
+    <h4 class="fw-bold mb-4"><i class="fa-solid fa-mug-hot me-2"></i>Bakery CAFE 투어</h4>
+    <!-- 입력 모드 -->
+    <div class="form-check mb-3">
+      <input class="form-check-input" type="radio" name="routeMode" id="inputMode" value="input" checked>
+      <label class="form-check-label fw-semibold" for="inputMode">출발지 / 도착지 입력</label>
+    </div>
+
+    <!-- 출발지/도착지 입력줄 -->
+    <div class="route-input-row mb-4">
+      <input type="text" id="startInput" class="form-control route-input" placeholder="출발지 입력">
+      <span class="route-separator">
+        <i class="fa-solid fa-arrow-right-long"></i>
+      </span>
+      <input type="text" id="endInput" class="form-control route-input" placeholder="도착지 입력">
+    </div>
+
+    <!-- 클릭 모드 -->
+    <div class="form-check mb-4">
+      <input class="form-check-input" type="radio" name="routeMode" id="clickMode" value="click">
+      <label class="form-check-label fw-semibold" for="clickMode">출발지 / 도착지 클릭</label>
+    </div>
+
+    <!-- 결과 -->
+    <div class="route-result text-muted">
+      <div>자동차 : <span id="carTime">?</span> 분 | <span id="carDist">?</span> km</div>
+      <div>자전거 : <span id="bikeTime">?</span> 분 | <span id="bikeDist">?</span> km</div>
+      <div>도보 : <span id="walkTime">?</span> 분 | <span id="walkDist">?</span> km</div>
+    </div>
+  </div>
+</section>
+
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
+    kakao.maps.load(function () {
+      const map = new kakao.maps.Map(document.getElementById('map'), {
+        center: new kakao.maps.LatLng(37.5665, 126.9780),
+        level: 5
+      });
+
+      const places = new kakao.maps.services.Places();
+      const cafeListEl = document.getElementById('cafeList');
+
+      let markerInfoList = [];
+      let openOverlay = null; 
+      let selectedCard = null;
+      let currentSelectedMarker = null;
+
+      function clearMap() {
+        markerInfoList.forEach(m => m.marker.setMap(null));
+        markerInfoList = [];
+        cafeListEl.innerHTML = '';
+        openOverlay = null;
+        selectedCard = null;
+        currentSelectedMarker = null;
+      }
+
+      function activateCard(card, overlay, marker, smallImg, bigImg) {
+        // 이전 선택 마커 복귀
+        if (currentSelectedMarker && currentSelectedMarker !== marker) {
+          currentSelectedMarker.setImage(smallImg);
+        }
+        marker.setImage(bigImg);
+        currentSelectedMarker = marker;
+
+        if (openOverlay) openOverlay.setMap(null);
+        overlay.setMap(map);
+        openOverlay = overlay;
+
+        map.panTo(marker.getPosition());
+
+        if (selectedCard) selectedCard.classList.remove('active-card');
+        card.classList.add('active-card');
+        selectedCard = card;
+
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      function addMarkerWithCard(place) {
+        const smallImg = new kakao.maps.MarkerImage('smallmarker.png', new kakao.maps.Size(30, 30), { offset: new kakao.maps.Point(15, 30) });
+        const bigImg = new kakao.maps.MarkerImage('bigmarker.png', new kakao.maps.Size(45, 45), { offset: new kakao.maps.Point(22, 45) });
+
+        const marker = new kakao.maps.Marker({
+          position: new kakao.maps.LatLng(place.y, place.x),
+          map: map,
+          image: smallImg
+        });
+
+        const overlayContent = document.createElement('div');
+        overlayContent.className = 'overlay-label';
+        overlayContent.style.fontSize = '12px';
+        overlayContent.style.fontWeight = '600';
+        overlayContent.style.color = '#333';
+        overlayContent.style.whiteSpace = 'nowrap';
+        overlayContent.style.padding = '4px 8px';
+        overlayContent.style.background = 'white';
+        overlayContent.style.border = '1px solid rgba(0,0,0,0.15)';
+        overlayContent.style.borderRadius = '8px';
+        overlayContent.style.boxShadow = '0 2px 6px rgba(0,0,0,0.25)';
+        overlayContent.style.transform = 'translateY(-4px)';
+        overlayContent.textContent = place.place_name;
+
+        const overlay = new kakao.maps.CustomOverlay({
+          content: overlayContent,
+          position: marker.getPosition(),
+          yAnchor: -0.3,
+          map: null,
+        });
+
+        overlay.setMap(map);
+
+
+        const card = document.createElement('div');
+        card.className = 'cafe-card';
+        card.innerHTML = `
+          <h6 class="fw-bold mb-1">${place.place_name}</h6>
+          <hr class="my-2">
+          <div class="small text-muted">
+            <div><strong>주소</strong> : ${place.road_address_name || '정보 없음'}</div>
+            <div><strong>지번</strong> : ${place.address_name || '정보 없음'}</div>
+            <div><strong>전화번호</strong> : ${place.phone || '정보 없음'}</div>
+          </div>
+        `;
+
+        kakao.maps.event.addListener(marker, 'click', () => {
+          activateCard(card, overlay, marker, smallImg, bigImg);
+        });
+        card.addEventListener('click', () => {
+          activateCard(card, overlay, marker, smallImg, bigImg);
+        });
+
+        cafeListEl.appendChild(card);
+        markerInfoList.push({ marker, overlay, place, card });
+      }
+
+      function searchAt(center) {
+        clearMap();
+        places.keywordSearch('베이커리 카페', function (data, status) {
+          if (status === kakao.maps.services.Status.OK) {
+            data.forEach(place => {
+              addMarkerWithCard(place);
+            });
+          }
+        }, { location: center, radius: 2000 });
+      }
+
+      function searchAtCenter() {
+        const center = map.getCenter();
+        searchAt(center);
+      }
+
+      function goToMyLocation() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function (pos) {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+            const loc = new kakao.maps.LatLng(lat, lon);
+            map.setCenter(loc);
+            searchAt(loc);
+          });
+        } else {
+          alert('GPS를 지원하지 않는 브라우저입니다 😢');
+        }
+      }
+
+      goToMyLocation();
+      document.getElementById('searchBtn').addEventListener('click', searchAtCenter);
+      document.getElementById('myLocationBtn').addEventListener('click', goToMyLocation);
+    });
+
     const themeToggle = document.getElementById('themeToggle');
     const docEl = document.documentElement;
     const THEME_KEY = 'onepage-theme';
@@ -64,5 +420,4 @@
     });
   </script>
 </body>
-
 </html>

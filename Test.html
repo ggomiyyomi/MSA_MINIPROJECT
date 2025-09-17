@@ -1,308 +1,168 @@
+<!--BOOK-->
+
 <!DOCTYPE html>
-<html lang="ko" data-bs-theme="light">
+<html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>나의 취미 & 추억 – 원페이지</title>
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    /* ---- Optional 스타일 ---- */
-    .hero {
-      min-height: 60vh;
-      display: grid;
-      place-items: center;
-      background:
-        radial-gradient(ellipse at top, rgba(111,66,193,.15), transparent 60%),
-        radial-gradient(ellipse at bottom, rgba(13,110,253,.15), transparent 60%),
-        url("https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=1600&auto=format&fit=crop") center/cover no-repeat;
-      position: relative;
-      color: #fff;
-    }
-    .hero::after{
-      content:"";
-      position:absolute; inset:0;
-      background: rgba(0,0,0,.35);
-    }
-    .hero > .content { position: relative; z-index: 1; }
-    .section-title { letter-spacing: .02em; }
-    .memory-img { aspect-ratio: 4/3; object-fit: cover; }
-    .fixed-cta {
-      position: fixed; right: 16px; bottom: 16px; z-index: 1030;
-    }
-    /* 방명록 영역 스크롤 */
-    #guestbookList { max-height: 280px; overflow: auto; }
-  </style>
+<meta charset="UTF-8">
+<title>Book with Thin Tabs & Covers</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root {
+    --page-count: 20;
+    --page-scroll: 25;
+    --underline: hsla(0,0%,25%,0.4);
+    --spine: hsl(0,0%,0%);
+    --cover: hsl(0,0%,10%);
+    --bg: hsl(0,0%,30%);
+    --insert: hsl(0,0%,85%);
+    --page: hsl(0,0%,90%);
+  }
+  body {
+    width:100vw;
+    height:calc(((var(--page-count) + 2) * var(--page-scroll)) * 1vh);
+    background:var(--bg);
+    overflow-x:hidden;
+  }
+  .book {
+    height:40vmin; width:30vmin; min-width:150px; min-height:200px;
+    position:fixed; top:50%; left:50%;
+    transform:translate(-50%,-50%) scale(.5);
+    transform-style:preserve-3d; perspective:1200px;
+  }
+  .book__page {
+    position:absolute; left:2%; top:50%;
+    border-radius:0 5% 5% 0;
+    transform:translate(0,-50%);
+    height:94%; width:94%;
+    z-index:calc(((var(--page-count)+2)-var(--page-index))*2);
+    transform-origin:0% 50%;
+  }
+  .page__half {
+    display:flex; align-items:center; justify-content:center;
+    height:100%; position:absolute; top:0; left:0; width:100%;
+    transform:rotateY(calc(var(--rotation)*1deg)) translate3d(0,0,calc((0.5*var(--coefficient))*1px));
+    -webkit-clip-path:inset(0 0.5% 0 0.5%);
+    clip-path:inset(0 0.5% 0 0.5%);
+  }
+  .page__half--front { --rotation:0; --coefficient:0; backface-visibility:hidden; border-radius:0 5% 5% 0; }
+  .page__half--back { --rotation:180; --coefficient:2; border-radius:5% 0 0 5%; }
+
+  /* 종이 페이지 */
+  .book__page:not(.book__cover) .page__half {
+    background:repeating-linear-gradient(0deg,transparent 0 1rem,var(--underline) 1rem calc(1rem + 1px),transparent calc(1rem + 1px)) 0 1rem/100% 100% no-repeat,var(--page);
+  }
+
+  /* 표지 스타일 */
+  .book__cover {
+    border-radius:0 5% 5% 0;
+    height:100%; width:100%;
+    position:absolute; top:50%; left:0;
+    background:var(--cover);
+  }
+  .book__cover--front .page__half--back { border-right:1rem solid var(--spine) }
+  .book__cover--back .page__half--front { border-left:1rem solid var(--spine) }
+
+  img { width:90%; height:90%; object-fit:contain; z-index:2 }
+
+  /* 얇은 책갈피 */
+  .bookmark-tab {
+    position:absolute;
+    top:-10px;
+    width:15px; height:30px;
+    border-radius:2px 2px 0 0;
+    cursor:pointer;
+    box-shadow:0 1px 2px rgba(0,0,0,0.3);
+    opacity:0.8;
+    transition:transform .2s, opacity .2s;
+    transform: translateX(10px);
+  }
+  .bookmark-tab:hover {
+    transform:translateY(-1px) scale(1.1);
+    opacity:1;
+  }
+</style>
 </head>
 <body>
-  <!-- Nav -->
-  <nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top shadow-sm">
-    <div class="container">
-      <a class="navbar-brand fw-bold" href="#top">My Memory</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"
-              aria-controls="nav" aria-expanded="false" aria-label="토글 내비게이션">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div id="nav" class="collapse navbar-collapse">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-          <li class="nav-item"><a class="nav-link" href="#hobbies">Hobbies</a></li>
-          <li class="nav-item"><a class="nav-link" href="#memories">Memories</a></li>
-          <li class="nav-item"><a class="nav-link" href="#media">Media</a></li>
-          <li class="nav-item"><a class="nav-link" href="#guestbook">Guestbook</a></li>
-        </ul>
-        <div class="d-flex gap-2 align-items-center">
-          <button id="themeToggle" class="btn btn-outline-secondary btn-sm" type="button" title="라이트/다크 전환">🌓</button>
-        </div>
-      </div>
+
+<div class="book"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+const colors = ['crimson','orange','gold','limegreen','deepskyblue','dodgerblue','blueviolet','hotpink','mediumslateblue','tomato'];
+const SRC = ['Book','Cubes','Elon','Gun','Kitkat','Launch','Pino','Pokedex','Record','Tcannon'];
+const totalPages = 10;
+
+const book = document.querySelector('.book');
+
+// 📘 앞표지
+const front = document.createElement('div');
+front.className = 'page book__page book__cover book__cover--front';
+front.style.setProperty('--page-index',1);
+front.innerHTML = `
+  <div class="page__half page__half--front"></div>
+  <div class="page__half page__half--back"></div>
+`;
+book.appendChild(front);
+
+// 📑 내부 페이지 (책갈피 자동 균등)
+for(let i=0;i<totalPages;i++){
+  const p=document.createElement('div');
+  p.className='page book__page';
+  p.style.setProperty('--page-index',i+2);
+
+  // 위치를 px 대신 % 비율로
+  const leftPercent = (i/(totalPages-1))*80; // 책 폭(약 80%) 기준 균등
+
+  p.innerHTML=`
+    <div class="bookmark-tab" style="background:${colors[i]}; left:${leftPercent}%;" title="${i+1}페이지"></div>
+    <div class="page__half page__half--front">
+      <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/605876/${SRC[Math.floor(Math.random()*SRC.length)]}-sketch.svg">
     </div>
-  </nav>
-
-  <!-- Hero -->
-  <header id="top" class="hero">
-    <div class="content text-center container">
-      <h1 class="display-5 fw-bold">나의 취미와 추억</h1>
-      <p class="lead mb-4">사진 몇 장, 한 곡의 음악, 그리고 짧은 이야기로 기록하는 나만의 페이지.</p>
-      <a href="#about" class="btn btn-light btn-lg">시작하기</a>
+    <div class="page__half page__half--back">
+      <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/605876/${SRC[Math.floor(Math.random()*SRC.length)]}-sketch.svg">
     </div>
-  </header>
+  `;
+  book.appendChild(p);
 
-  <!-- About -->
-  <section id="about" class="py-5">
-    <div class="container">
-      <h2 class="section-title h3 fw-bold mb-4">About Me</h2>
-      <div class="row g-4 align-items-center">
-        <div class="col-md-4">
-          <img class="img-fluid rounded-3 shadow-sm"
-               src="https://picsum.photos/600/600?random=12" alt="프로필 대체 이미지">
-        </div>
-        <div class="col-md-8">
-          <p class="mb-3">
-            안녕하세요! 저는 <strong>당신의 이름</strong> 입니다. 요즘 가장 즐겨 하는 취미는 <em>등산, 사진, 커피</em>예요.
-            주말마다 근교를 돌아다니며 소소한 순간을 기록합니다.
-          </p>
-          <p class="mb-3">
-            이 페이지는 제 취미와 추억을 한 장에 담은 포트폴리오 템플릿입니다. 내용과 이미지를 자유롭게 교체해서 사용하세요.
-          </p>
-          <ul class="list-unstyled small text-body-secondary">
-            <li>📍 위치: 서울</li>
-            <li>📷 카메라: 스마트폰/미러리스</li>
-            <li>☕ 선호: 라떼, 핸드드립</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
+  p.querySelector('.bookmark-tab').addEventListener('click',()=>{
+    window.scrollTo({ top: (i+1)*(window.innerHeight*0.25), behavior:'smooth' });
+  });
+}
 
-  <!-- Hobbies -->
-  <section id="hobbies" class="py-5 bg-body-secondary">
-    <div class="container">
-      <h2 class="section-title h3 fw-bold mb-4">Hobbies</h2>
-      <div class="row g-4">
-        <div class="col-md-4">
-          <div class="card h-100 shadow-sm">
-            <img src="https://picsum.photos/800/600?random=1" class="card-img-top memory-img" alt="취미 사진">
-            <div class="card-body">
-              <h5 class="card-title">등산</h5>
-              <p class="card-text">새벽 공기와 정상에서 마시는 커피 한 잔의 행복.</p>
-              <button class="btn btn-outline-primary btn-sm like-btn" data-key="hike">좋아요 <span class="badge text-bg-primary like-count">0</span></button>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card h-100 shadow-sm">
-            <img src="https://picsum.photos/800/600?random=2" class="card-img-top memory-img" alt="취미 사진">
-            <div class="card-body">
-              <h5 class="card-title">사진</h5>
-              <p class="card-text">빛과 그림자, 그 사이에 담긴 이야기.</p>
-              <button class="btn btn-outline-primary btn-sm like-btn" data-key="photo">좋아요 <span class="badge text-bg-primary like-count">0</span></button>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card h-100 shadow-sm">
-            <img src="https://picsum.photos/800/600?random=3" class="card-img-top memory-img" alt="취미 사진">
-            <div class="card-body">
-              <h5 class="card-title">카페 탐방</h5>
-              <p class="card-text">동네 카페에서 발견한 작지만 확실한 행복.</p>
-              <button class="btn btn-outline-primary btn-sm like-btn" data-key="cafe">좋아요 <span class="badge text-bg-primary like-count">0</span></button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <p class="mt-3 small text-body-secondary">* 좋아요 수는 브라우저에 저장됩니다(로컬스토리지).</p>
-    </div>
-  </section>
+// 📘 뒤표지
+const back = document.createElement('div');
+back.className = 'page book__page book__cover book__cover--back';
+back.style.setProperty('--page-index',totalPages+2);
+back.innerHTML = `
+  <div class="page__half page__half--front"></div>
+  <div class="page__half page__half--back"></div>
+`;
+book.appendChild(back);
 
-  <!-- Memories grid -->
-  <section id="memories" class="py-5">
-    <div class="container">
-      <h2 class="section-title h3 fw-bold mb-4">Memories</h2>
-      <div class="row g-4">
-        <!-- 카드 1 -->
-        <div class="col-sm-6 col-lg-4">
-          <div class="card h-100 shadow-sm">
-            <img src="https://picsum.photos/800/600?random=4" class="card-img-top memory-img" alt="추억 사진">
-            <div class="card-body">
-              <h5 class="card-title">봄 소풍</h5>
-              <p class="card-text small">따뜻한 햇살 아래 피크닉, 잔디와 샌드위치.</p>
-              <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#memoryModal" data-title="봄 소풍" data-img="https://picsum.photos/1200/800?random=4">자세히</button>
-            </div>
-          </div>
-        </div>
-        <!-- 카드 2 -->
-        <div class="col-sm-6 col-lg-4">
-          <div class="card h-100 shadow-sm">
-            <img src="https://picsum.photos/800/600?random=5" class="card-img-top memory-img" alt="추억 사진">
-            <div class="card-body">
-              <h5 class="card-title">첫 카페</h5>
-              <p class="card-text small">동네에서 찾은 숨은 보석 같은 카페.</p>
-              <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#memoryModal" data-title="첫 카페" data-img="https://picsum.photos/1200/800?random=5">자세히</button>
-            </div>
-          </div>
-        </div>
-        <!-- 카드 3 -->
-        <div class="col-sm-6 col-lg-4">
-          <div class="card h-100 shadow-sm">
-            <img src="https://picsum.photos/800/600?random=6" class="card-img-top memory-img" alt="추억 사진">
-            <div class="card-body">
-              <h5 class="card-title">우중 산책</h5>
-              <p class="card-text small">비 오는 날만의 촉촉한 색감과 소리.</p>
-              <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#memoryModal" data-title="우중 산책" data-img="https://picsum.photos/1200/800?random=6">자세히</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Modal for large image -->
-      <div class="modal fade" id="memoryModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-          <div class="modal-content">
-            <img id="modalImg" alt="확대 이미지" class="w-100 rounded-top">
-            <div class="modal-body">
-              <h5 id="modalTitle" class="mb-0">제목</h5>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-
-  <!-- Footer -->
-  <footer class="py-4 bg-body-tertiary">
-    <div class="container d-flex flex-wrap justify-content-between align-items-center small text-body-secondary">
-      <span>© <span id="year"></span> 나의 추억 페이지</span>
-      <a class="text-decoration-none" href="#top">맨 위로 ↑</a>
-    </div>
-  </footer>
-
-  <!-- Quick CTA -->
-  <a class="btn btn-primary rounded-pill shadow fixed-cta" href="#memories">📸 사진 보기</a>
-
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    // --- 연도 표시
-    document.getElementById('year').textContent = new Date().getFullYear();
-
-    // --- 다크모드 유지 (localStorage)
-    const themeToggle = document.getElementById('themeToggle');
-    const docEl = document.documentElement;
-    const THEME_KEY = 'onepage-theme';
-    const savedTheme = localStorage.getItem(THEME_KEY);
-    if (savedTheme) docEl.setAttribute('data-bs-theme', savedTheme);
-
-    themeToggle.addEventListener('click', () => {
-      const cur = docEl.getAttribute('data-bs-theme') || 'light';
-      const next = cur === 'light' ? 'dark' : 'light';
-      docEl.setAttribute('data-bs-theme', next);
-      localStorage.setItem(THEME_KEY, next);
-    });
-
-    // --- 좋아요(취미) 카운트 (localStorage)
-    const LIKE_PREFIX = 'like-';
-    const likeBtns = document.querySelectorAll('.like-btn');
-    likeBtns.forEach(btn => {
-      const key = LIKE_PREFIX + btn.dataset.key;
-      const countSpan = btn.querySelector('.like-count');
-      countSpan.textContent = localStorage.getItem(key) || '0';
-      btn.addEventListener('click', () => {
-        const n = parseInt(localStorage.getItem(key) || '0', 10) + 1;
-        localStorage.setItem(key, n);
-        countSpan.textContent = n;
-      });
-    });
-
-    // --- Memories 모달 이미지/제목 삽입
-    const memoryModal = document.getElementById('memoryModal');
-    if (memoryModal) {
-      memoryModal.addEventListener('show.bs.modal', event => {
-        const button = event.relatedTarget;
-        const title = button?.getAttribute('data-title') || '추억';
-        const imgUrl = button?.getAttribute('data-img');
-        document.getElementById('modalTitle').textContent = title;
-        const modalImg = document.getElementById('modalImg');
-        modalImg.src = imgUrl;
-        modalImg.alt = title;
-      });
+// 📖 GSAP 넘김 애니메이션
+gsap.registerPlugin(ScrollTrigger);
+const pages = [...document.querySelectorAll('.book__page')];
+pages.forEach((page,index)=>{
+  gsap.set(page,{z:index===0?13:-index*1});
+  gsap.to(page,{
+    rotateY:`-=${180 - index/2}`,
+    scrollTrigger:{
+      scrub:1,
+      start:()=> (index+1)*(window.innerHeight*0.25),
+      end:()=> (index+2)*(window.innerHeight*0.25)
     }
-
-    // --- 방명록 (localStorage)
-    const GB_KEY = 'guestbook-items';
-    const listEl = document.getElementById('guestbookList');
-    const formEl = document.getElementById('guestbookForm');
-    const clearBtn = document.getElementById('clearGuestbook');
-
-    function renderGuestbook(items) {
-      listEl.innerHTML = '';
-      if (!items || items.length === 0) {
-        listEl.innerHTML = '<p class="text-body-secondary">아직 메시지가 없습니다. 첫 번째로 남겨보세요!</p>';
-        return;
-      }
-      items.slice().reverse().forEach(({name, message, ts}, idx) => {
-        const d = new Date(ts);
-        const card = document.createElement('div');
-        card.className = 'border rounded-3 p-3 mb-3';
-        card.innerHTML = `
-          <div class="d-flex justify-content-between">
-            <strong>${name}</strong>
-            <span class="small text-body-secondary">${d.toLocaleString()}</span>
-          </div>
-          <p class="mb-0 mt-2">${message.replaceAll('<','&lt;').replaceAll('>','&gt;')}</p>
-        `;
-        listEl.appendChild(card);
-      });
+  });
+  gsap.to(page,{
+    z:index===0?-13:index,
+    scrollTrigger:{
+      scrub:1,
+      start:()=> (index+1)*(window.innerHeight*0.25),
+      end:()=> (index+1.5)*(window.innerHeight*0.25)
     }
-    function loadGuestbook() {
-      try {
-        const items = JSON.parse(localStorage.getItem(GB_KEY) || '[]');
-        renderGuestbook(items);
-      } catch {
-        localStorage.removeItem(GB_KEY);
-        renderGuestbook([]);
-      }
-    }
-    loadGuestbook();
+  });
+});
+</script>
 
-    formEl.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const name = document.getElementById('name').value.trim();
-      const message = document.getElementById('message').value.trim();
-      if (!name || !message) return;
-      const items = JSON.parse(localStorage.getItem(GB_KEY) || '[]');
-      items.push({name, message, ts: Date.now()});
-      localStorage.setItem(GB_KEY, JSON.stringify(items));
-      formEl.reset();
-      loadGuestbook();
-    });
-
-    clearBtn.addEventListener('click', () => {
-      if (confirm('방명록을 모두 삭제할까요? (이 브라우저에서만 삭제됩니다)')) {
-        localStorage.removeItem(GB_KEY);
-        loadGuestbook();
-      }
-    });
-  </script>
 </body>
 </html>
