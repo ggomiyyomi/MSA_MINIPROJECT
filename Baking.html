@@ -1,117 +1,315 @@
 <!DOCTYPE html>
 <html lang="ko" data-bs-theme="light">
+
 <head>
-  <meta charset="utf-8"> 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>[이름]의 취미 페이지</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    .hero {
-      min-height: 40vh;
-      display:grid;place-items:center;
-      background:url("https://picsum.photos/1600/900?blur=2") center/cover no-repeat;
-      position:relative;color:#fff;
-    }
-    .hero::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.4);}
-    .hero .inner{position:relative;z-index:1;}
-    .avatar{width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid #fff;}
-    .gallery-img{aspect-ratio:4/3;object-fit:cover;}
-    .fixed-back{position:fixed;left:16px;bottom:16px;z-index:1030;}
-  </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>희정's 취미 페이지</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .hero {
+            min-height: 40vh;
+            display: grid;
+            place-items: center;
+            background: url("/주방.png") center/cover no-repeat;
+            position: relative;
+            color: #fff;
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, .4);
+        }
+
+        .hero .inner {
+            position: relative;
+            z-index: 1;
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #fff;
+        }
+
+        .gallery-img {
+            aspect-ratio: 4/3;
+            object-fit: cover;
+        }
+
+        .fixed-back {
+            position: fixed;
+            left: 16px;
+            bottom: 16px;
+            z-index: 1030;
+        }
+
+        .bg-body-secondary {
+            background-color: #a58864 !important;
+            color: #fdf8f4;
+        }
+
+        .text-brown {
+            color: #a58864;
+        }
+
+        .cafe-section {
+            background: #fdf8f4;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        .cafe-tags .badge {
+            background: #a58864;
+            color: #fff;
+            font-size: 0.85rem;
+            padding: 0.5em 0.9em;
+        }
+
+        .cafe-photo img {
+            border-radius: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .cafe-photo img:hover {
+            transform: scale(1.05);
+        }
+
+        .cafe-review {
+            font-size: 1rem;
+            font-style: italic;
+            color: #5a4636;
+            background: #fdf1e6;
+            padding: 1rem;
+            border-radius: 12px;
+        }
+
+        .btn-brown {
+            background: #a58864;
+            color: #fff;
+        }
+
+        .btn-brown:hover {
+            background: #8a6f4e;
+            color: #fff;
+        }
+
+        .delete-icon {
+            font-size: 1.2rem;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+
+        .delete-icon:hover {
+            transform: scale(1.2) rotate(-10deg);
+            color: #ff6b6b;
+        }
+
+        .cafe-form-card {
+            border: 1px solid #fffdf9;
+            border-radius: 16px;
+            padding: 2rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .cafe-form-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        .form-custom {
+            border-radius: 10px;
+            border: 1px solid #e0c9a6;
+            transition: border 0.2s, box-shadow 0.2s;
+        }
+
+        .form-custom:focus {
+            border-color: #a58864;
+            box-shadow: 0 0 0 0.2rem rgba(165, 136, 100, 0.25);
+        }
+    </style>
 </head>
+
 <body>
-<a href="index.html" class="btn btn-outline-secondary fixed-back">← 메인</a>
+    <a href="index.html" class="btn btn-outline-secondary fixed-back">← 메인</a>
 
-<header class="hero">
-  <div class="inner text-center">
-    <img src="https://picsum.photos/300?random=5" alt="프로필" class="avatar mb-3">
-    <h1 class="fw-bold">이름 또는 닉네임</h1>
-    <p class="lead mb-0">간단한 한 줄 소개</p>
-  </div>
-</header>
-
-<section class="py-5">
-  <div class="container">
-    <h2 class="h4 fw-bold mb-3">About</h2>
-    <p>
-      나에 대한 짧은 소개를 여기에 적어주세요. 언제부터 어떤 취미를 즐기게 되었는지,
-      특별했던 추억 한두 가지를 간단히 적으면 좋습니다.
-    </p>
-  </div>
-</section>
-
-<section class="py-5 bg-body-secondary">
-  <div class="container">
-    <h2 class="h4 fw-bold mb-3">Gallery</h2>
-    <div class="row g-4">
-      <div class="col-sm-6 col-lg-4">
-        <img src="https://picsum.photos/800/600?random=11" class="w-100 rounded-3 shadow-sm gallery-img" alt="추억1">
-      </div>
-      <div class="col-sm-6 col-lg-4">
-        <img src="https://picsum.photos/800/600?random=12" class="w-100 rounded-3 shadow-sm gallery-img" alt="추억2">
-      </div>
-      <div class="col-sm-6 col-lg-4">
-        <img src="https://picsum.photos/800/600?random=13" class="w-100 rounded-3 shadow-sm gallery-img" alt="추억3">
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- === Interests (HTML에 직접 입력) === -->
-<section class="py-5">
-  <div class="container">
-    <h2 class="h4 fw-bold mb-4">Interests (취미 태그)</h2>
-
-    <!-- 여기를 직접 수정하세요: 배지를 추가/삭제/수정 -->
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <h6 class="fw-semibold mb-3">내 태그</h6>
-        <div class="d-flex flex-wrap gap-2 my-tags">
-          <!-- 예시 태그들: 필요에 맞게 직접 편집 -->
-          <span class="badge rounded-pill text-bg-primary">#자바</span>
-          <span class="badge rounded-pill text-bg-primary">#부트스트랩</span>
-          <span class="badge rounded-pill text-bg-primary">#등산</span>
-          <span class="badge rounded-pill text-bg-primary">#사진</span>
-          <span class="badge rounded-pill text-bg-primary">#카페</span>
-          <!-- 예: 새 태그 추가 -->
-          <!-- <span class="badge rounded-pill text-bg-primary">#여행</span> -->
+    <header class="hero">
+        <div class="inner text-center">
+            <img src="/프로필.png" alt="프로필" class="avatar mb-3">
+            <h1 class="fw-bold">희정's BAKING</h1>
+            <p class="lead mb-0">할 줄 아는 건 우선 쿠키</p>
         </div>
+    </header>
 
-        <hr class="my-4">
+    <section class="py-5">
+        <div class="container">
+            <h2 class="h4 fw-bold mb-3 text-brown">소개</h2>
+            <p>
+                빵과 쿠키, 초콜릿 없으면 못살아서 직접 만들고싶은 빵순🍞입니다.<br>
+                가끔씩 심심하거나 만들고싶을때 대량으로 만들어버려서 나눠주는걸 좋아해요.<br>
+                지금은 쿠키만 만들줄 알지만... 나중엔 빵도 만들수 있는 사람이 되길 🙏🏻
+            </p>
+        </div>
+    </section>
 
-        <!-- (선택) 카테고리로 나눠 쓰고 싶으면 아래 블록을 복사해 섹션을 더 만들면 됩니다 -->
-        <div class="row g-3">
-          <div class="col-md-6">
-            <div class="small text-body-secondary mb-2">개발</div>
-            <div class="d-flex flex-wrap gap-2">
-              <span class="badge rounded-pill text-bg-secondary">#Spring</span>
-              <span class="badge rounded-pill text-bg-secondary">#Git</span>
-              <span class="badge rounded-pill text-bg-secondary">#DB</span>
+    <section class="py-5 bg-body-secondary">
+        <div class="container">
+            <h2 class="h4 fw-bold mb-3">Cookie들</h2>
+            <div class="row g-4">
+                <div class="col-12 col-sm-6 col-lg-3"><img src="/거북이쿠키.png"
+                        class="w-100 rounded-3 shadow-sm gallery-img"></div>
+                <div class="col-12 col-sm-6 col-lg-3"><img src="/쿠키공장.png"
+                        class="w-100 rounded-3 shadow-sm gallery-img"></div>
+                <div class="col-12 col-sm-6 col-lg-3"><img src="/마루쿠키.png"
+                        class="w-100 rounded-3 shadow-sm gallery-img"></div>
+                <div class="col-12 col-sm-6 col-lg-3"><img src="/정체모를곰돌이쿠키.png"
+                        class="w-100 rounded-3 shadow-sm gallery-img"></div>
             </div>
-          </div>
-          <div class="col-md-6">
-            <div class="small text-body-secondary mb-2">라이프</div>
-            <div class="d-flex flex-wrap gap-2">
-              <span class="badge rounded-pill text-bg-secondary">#러닝</span>
-              <span class="badge rounded-pill text-bg-secondary">#헬스</span>
-              <span class="badge rounded-pill text-bg-secondary">#음악</span>
+        </div>
+    </section>
+
+    <section class="py-5">
+        <h1 class="h4 fw-bold mb-4 text-center">☕️ Recommend CAFE</h1>
+        <div id="cafe-list"></div>
+
+        <div class="container mt-5">
+            <div class="card cafe-form-card shadow-sm border-0">
+                <div class="card-body">
+                    <h2 class="h5 fw-bold mb-4 text-center text-brown">카페 추천하기</h2>
+                    <form id="cafeForm">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold"><i class="fa-solid fa-store me-2 text-brown"></i>카페
+                                이름</label>
+                            <input type="text" class="form-control form-custom" id="cafeName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold"><i
+                                    class="fa-solid fa-tags me-2 text-brown"></i>태그</label>
+                            <input type="text" class="form-control form-custom" id="cafeTags" placeholder="#송파, #타르트">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold"><i class="fa-solid fa-image me-2 text-brown"></i>사진
+                                업로드 (최대 2장)</label>
+                            <input type="file" class="form-control form-custom" id="cafePhotos" accept="image/*"
+                                multiple>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold"><i class="fa-solid fa-pen-nib me-2 text-brown"></i>한줄
+                                후기</label>
+                            <input type="text" class="form-control form-custom" id="cafeReview" required>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-brown px-4 py-2 rounded-pill shadow-sm">
+                                <i class="fa-solid fa-plus me-1"></i> 등록
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
+        </div>
+    </section>
+
+    <footer class="py-4 bg-body-tertiary text-center small text-body-secondary">
+        © <span id="year"></span> 나의 추억 페이지
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        const cafeForm = document.getElementById("cafeForm");
+        const cafeList = document.getElementById("cafe-list");
+
+        // === LocalStorage JSON 관리 함수 ===
+        function getCafes() {
+            return JSON.parse(localStorage.getItem("cafes")) || [];
+        }
+        function saveCafes(cafes) {
+            localStorage.setItem("cafes", JSON.stringify(cafes));
+        }
+        function addCafe(cafe) {
+            const cafes = getCafes();
+            cafes.push(cafe);
+            saveCafes(cafes);
+        }
+        function removeCafe(index) {
+            const cafes = getCafes();
+            cafes.splice(index, 1);
+            saveCafes(cafes);
+        }
+
+        // DOM에 카페 추가
+        function appendCafe(cafe, photos = [], index) {
+            const cafeCard = document.createElement("div");
+            cafeCard.classList.add("container", "cafe-section", "mb-4");
+
+            cafeCard.innerHTML = `
+      <div class="d-flex justify-content-between align-items-start">
+        <h2 class="h5 fw-bold mb-3">${cafe.name}</h2>
+        <i class="fa-solid fa-trash-can text-danger delete-icon" style="cursor:pointer;"></i>
+      </div>
+      <div class="d-flex flex-wrap gap-2 cafe-tags mb-4">
+        ${cafe.tags.map(tag => `<span class="badge rounded-pill">${tag}</span>`).join("")}
+      </div>
+      <div class="row g-4">
+        <div class="col-md-6 cafe-photo">
+          <h6 class="fw-semibold mb-2 text-brown">PHOTO</h6>
+          <div class="row g-3">
+            ${photos.map(photo => `
+              <div class="col-6"><img src="${photo}" class="w-100 shadow-sm" alt="cafe photo"></div>
+            `).join("")}
           </div>
         </div>
-        <!-- 카테고리 블록 끝 -->
+        <div class="col-md-6">
+          <h6 class="fw-semibold mb-2 text-brown">한줄후기</h6>
+          <div class="cafe-review">${cafe.review}</div>
+        </div>
       </div>
-    </div>
-  </div>
-</section>
+    `;
 
-<footer class="py-4 bg-body-tertiary text-center small text-body-secondary">
-  © <span id="year"></span> 나의 추억 페이지
-</footer>
+            cafeCard.querySelector(".delete-icon").addEventListener("click", () => {
+                if (confirm("이 카페를 삭제할까요?")) {
+                    removeCafe(index);
+                    cafeCard.remove();
+                }
+            });
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-  // 연도 표기만 유지
-  document.getElementById('year').textContent = new Date().getFullYear();
-</script>
+            cafeList.appendChild(cafeCard);
+        }
+
+        // 초기 로드
+        function loadCafes() {
+            const cafes = getCafes();
+            cafeList.innerHTML = "";
+            cafes.forEach((cafe, i) => appendCafe(cafe, [], i));
+        }
+
+        // 등록 이벤트
+        cafeForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            const name = document.getElementById("cafeName").value;
+            const tags = document.getElementById("cafeTags").value.split(",").map(t => t.trim()).filter(Boolean);
+            const review = document.getElementById("cafeReview").value;
+            const files = document.getElementById("cafePhotos").files;
+
+            const photos = [];
+            for (let file of files) {
+                photos.push(URL.createObjectURL(file));
+            }
+
+            const newCafe = { name, tags, review };
+            addCafe(newCafe);
+            appendCafe(newCafe, photos, getCafes().length - 1);
+            cafeForm.reset();
+        });
+
+        document.addEventListener("DOMContentLoaded", loadCafes);
+    </script>
 </body>
+
 </html>
