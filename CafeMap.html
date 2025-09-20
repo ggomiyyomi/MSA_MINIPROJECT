@@ -245,8 +245,8 @@
             }
 
             function addMarkerWithCard(place) {
-                const smallImg = new kakao.maps.MarkerImage('smallmarker.png', new kakao.maps.Size(30, 30), { offset: new kakao.maps.Point(15, 30) });
-                const bigImg = new kakao.maps.MarkerImage('bigmarker.png', new kakao.maps.Size(45, 45), { offset: new kakao.maps.Point(22, 45) });
+                const smallImg = new kakao.maps.MarkerImage('/images/smallmarker.png', new kakao.maps.Size(30, 30), { offset: new kakao.maps.Point(15, 30) });
+                const bigImg = new kakao.maps.MarkerImage('/images/bigmarker.png', new kakao.maps.Size(45, 45), { offset: new kakao.maps.Point(22, 45) });
 
                 const marker = new kakao.maps.Marker({
                     position: new kakao.maps.LatLng(place.y, place.x),
