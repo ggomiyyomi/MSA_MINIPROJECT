@@ -136,6 +136,31 @@
 </head>
 
 <body>
+
+      <!-- Nav -->
+  <nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="#top">My Memory</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"
+        aria-controls="nav" aria-expanded="false" aria-label="토글 내비게이션">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div id="nav" class="collapse navbar-collapse ">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="#about">Guestbook</a></li>
+          <li class="nav-item"><a class="nav-link" href="#hobbies">Video</a></li>
+          <li class="nav-item"><a class="nav-link" href="#memories">Music</a></li>
+          <li class="nav-item"><a class="nav-link" href="#media">Drawing</a></li>
+          <li class="nav-item"><a class="nav-link" href="#guestbook">CAFE Map</a></li>
+        </ul>
+        <div class="d-flex gap-2 align-items-center">
+          <button id="themeToggle" class="btn btn-outline-secondary btn-sm" type="button"
+            title="라이트/다크 전환">🌓</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
     <a href="index.html" class="btn btn-outline-secondary fixed-back">← 메인</a>
 
     <header class="hero">
@@ -220,6 +245,38 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+         new fullpage('#fullpage', {
+      autoScrolling: true,
+      navigation: true
+    });
+
+
+    const themeToggle = document.getElementById('themeToggle');
+    const docEl = document.documentElement;
+    const THEME_KEY = 'onepage-theme';
+    const savedTheme = localStorage.getItem(THEME_KEY);
+    if (savedTheme) docEl.setAttribute('data-bs-theme', savedTheme);
+
+    themeToggle.addEventListener('click', () => {
+      const cur = docEl.getAttribute('data-bs-theme') || 'light';
+      const next = cur === 'light' ? 'dark' : 'light';
+      docEl.setAttribute('data-bs-theme', next);
+      localStorage.setItem(THEME_KEY, next);
+    });
+
+    const memoryModal = document.getElementById('memoryModal');
+    if (memoryModal) {
+      memoryModal.addEventListener('show.bs.modal', event => {
+        const button = event.relatedTarget;
+        const title = button?.getAttribute('data-title') || '추억';
+        const imgUrl = button?.getAttribute('data-img');
+        document.getElementById('modalTitle').textContent = title;
+        const modalImg = document.getElementById('modalImg');
+        modalImg.src = imgUrl;
+        modalImg.alt = title;
+      });
+    }
+
         document.getElementById('year').textContent = new Date().getFullYear();
 
         const cafeForm = document.getElementById("cafeForm");
