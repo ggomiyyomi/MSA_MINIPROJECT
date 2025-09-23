@@ -7,6 +7,8 @@
     <title>희정's 취미 페이지</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=f3c9f0ec8669c2333a8b6964f82e24ae&libraries=services"></script>
     <style>
         .hero {
             min-height: 40vh;
@@ -68,13 +70,18 @@
         .cafe-tags .badge {
             background: #a58864;
             color: #fff;
-            font-size: 0.85rem;
-            padding: 0.5em 0.9em;
+            font-size: .85rem;
+            padding: .5em .9em;
         }
 
         .cafe-photo img {
             border-radius: 12px;
-            transition: transform 0.3s ease;
+            transition: transform .3s ease;
+            width: 100%;
+            height: auto;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 12px;
         }
 
         .cafe-photo img:hover {
@@ -102,7 +109,7 @@
 
         .delete-icon {
             font-size: 1.2rem;
-            transition: transform 0.2s ease, color 0.2s ease;
+            transition: transform .2s ease, color .2s ease;
         }
 
         .delete-icon:hover {
@@ -114,7 +121,7 @@
             border: 1px solid #fffdf9;
             border-radius: 16px;
             padding: 2rem;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: transform .2s, box-shadow .2s;
         }
 
         .cafe-form-card:hover {
@@ -125,41 +132,87 @@
         .form-custom {
             border-radius: 10px;
             border: 1px solid #e0c9a6;
-            transition: border 0.2s, box-shadow 0.2s;
+            transition: border .2s, box-shadow .2s;
         }
 
         .form-custom:focus {
             border-color: #a58864;
-            box-shadow: 0 0 0 0.2rem rgba(165, 136, 100, 0.25);
+            box-shadow: 0 0 0 .2rem rgba(165, 136, 100, .25);
+        }
+
+        .result-item {
+            cursor: pointer;
+        }
+
+        .result-item:hover {
+            background: #fff7ec;
+        }
+
+        .cafe-section .fa-location-dot {
+            color: #a58864;
+        }
+
+
+        #searchResults {
+            padding-right: 12px;
+            border: none;
+        }
+
+        #searchResults .list-group-item {
+            border: none !important;
+            padding: 10px 8px;
+        }
+
+        #searchResults .list-group-item:hover {
+            background: #e2caac;
+        }
+
+
+
+        #searchResults::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #searchResults::-webkit-scrollbar-track {
+            background: none;
+            border-radius: 10px;
+        }
+
+        #searchResults::-webkit-scrollbar-thumb {
+            background: #a58864;
+            border-radius: 10px;
+        }
+
+        #modalImage {
+        max-height: 90vh;
+        object-fit: contain;
         }
     </style>
 </head>
 
 <body>
-
-      <!-- Nav -->
-  <nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top shadow-sm">
-    <div class="container">
-      <a class="navbar-brand fw-bold" href="#top">My Memory</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"
-        aria-controls="nav" aria-expanded="false" aria-label="토글 내비게이션">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div id="nav" class="collapse navbar-collapse ">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item"><a class="nav-link" href="#about">Guestbook</a></li>
-          <li class="nav-item"><a class="nav-link" href="#hobbies">Video</a></li>
-          <li class="nav-item"><a class="nav-link" href="#memories">Music</a></li>
-          <li class="nav-item"><a class="nav-link" href="#media">Drawing</a></li>
-          <li class="nav-item"><a class="nav-link" href="#guestbook">CAFE Map</a></li>
-        </ul>
-        <div class="d-flex gap-2 align-items-center">
-          <button id="themeToggle" class="btn btn-outline-secondary btn-sm" type="button"
-            title="라이트/다크 전환">🌓</button>
+    <!-- Nav -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#top">My Memory</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div id="nav" class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="#about">Guestbook</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#hobbies">Video</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#memories">Music</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#media">Drawing</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#guestbook">CAFE Map</a></li>
+                </ul>
+                <div class="d-flex gap-2 align-items-center">
+                    <button id="themeToggle" class="btn btn-outline-secondary btn-sm" type="button"
+                        title="라이트/다크 전환">🌓</button>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </nav>
+    </nav>
 
     <a href="index.html" class="btn btn-outline-secondary fixed-back">← 메인</a>
 
@@ -171,6 +224,7 @@
         </div>
     </header>
 
+    <!-- 소개 -->
     <section class="py-5">
         <div class="container">
             <h2 class="h4 fw-bold mb-3 text-brown">소개</h2>
@@ -182,6 +236,7 @@
         </div>
     </section>
 
+    <!-- 쿠키 갤러리 -->
     <section class="py-5 bg-body-secondary">
         <div class="container">
             <h2 class="h4 fw-bold mb-3">Cookie들</h2>
@@ -198,10 +253,47 @@
         </div>
     </section>
 
+    <!-- Recommend CAFE  -->
     <section class="py-5">
         <h1 class="h4 fw-bold mb-4 text-center">☕️ Recommend CAFE</h1>
-        <div id="cafe-list"></div>
 
+        <div id="cafe-list">
+            <!-- 예시 -->
+            <div class="container cafe-section mb-4">
+                <h2 class="h5 fw-bold mb-3">로스트앤베이크 가락점</h2>
+                <div class="d-flex flex-wrap gap-2 cafe-tags mb-4">
+                    <span class="badge rounded-pill">#서울송파</span>
+                    <span class="badge rounded-pill">#양식</span>
+                    <span class="badge rounded-pill">#타르트</span>
+                    <span class="badge rounded-pill">#빵</span>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6 cafe-photo">
+                        <h6 class="fw-semibold mb-2 text-brown">PHOTO</h6>
+                        <div class="row g-3">
+                            <div class="col-6"><img src="/images/타르트1.png" class="w-100 shadow-sm" alt="타르트1"></div>
+                            <div class="col-6"><img src="/images/타르트2.png" class="w-100 shadow-sm" alt="타르트2"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 d-flex flex-column justify-content-between">
+                        <div>
+                            <h6 class="fw-semibold mb-2 text-brown">한줄후기</h6>
+                            <div class="cafe-review">겉바속촉 그.자.체 🍓❤️</div>
+                        </div>
+
+                        <div>
+                            <h6 class="fw-semibold mt-3 mb-2 text-brown">카페 위치 보기</h6>
+                            <div id="map-fixed-addr" class="small text-muted mb-2">
+                                <i class="fa-solid fa-location-dot text-brown me-1"></i><span></span>
+                            </div>
+                            <div id="map-fixed" style="width:100%;height:220px;border-radius:10px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 새 카페 등록 폼 -->
         <div class="container mt-5">
             <div class="card cafe-form-card shadow-sm border-0">
                 <div class="card-body">
@@ -212,22 +304,52 @@
                                 이름</label>
                             <input type="text" class="form-control form-custom" id="cafeName" required>
                         </div>
+
                         <div class="mb-3">
-                            <label class="form-label fw-semibold"><i
-                                    class="fa-solid fa-tags me-2 text-brown"></i>태그</label>
+                            <label class="form-label fw-semibold"><i class="fa-solid fa-tags me-2 text-brown"></i>태그
+                                (쉼표로 구분)</label>
                             <input type="text" class="form-control form-custom" id="cafeTags" placeholder="#송파, #타르트">
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label fw-semibold"><i class="fa-solid fa-image me-2 text-brown"></i>사진
                                 업로드 (최대 2장)</label>
                             <input type="file" class="form-control form-custom" id="cafePhotos" accept="image/*"
                                 multiple>
                         </div>
+
+                        <!-- 위치 검색/선택 -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold"><i
+                                    class="fa-solid fa-map-location-dot me-2 text-brown"></i>위치 선택</label>
+                            <div class="input-group mb-2">
+                                <input type="text" id="placeKeyword" class="form-control form-custom"
+                                    placeholder="예: 로스트앤베이크 가락점">
+                                <button type="button" id="btnSearch" class="btn btn-brown">검색</button>
+                            </div>
+                            <div class="row g-3 mt-2">
+                                <div class="col-md-7">
+                                    <div id="selectMap" style="width:100%;height:260px;border-radius:10px;"></div>
+                                </div>
+                                <div class="col-md-5">
+                                    <ul id="searchResults" class="list-group small"
+                                        style="max-height:260px;overflow:auto;"></ul>
+                                </div>
+                            </div>
+                            <div id="chosenAddress" class="small text-muted mt-2"></div>
+                        </div>
+
                         <div class="mb-3">
                             <label class="form-label fw-semibold"><i class="fa-solid fa-pen-nib me-2 text-brown"></i>한줄
                                 후기</label>
                             <input type="text" class="form-control form-custom" id="cafeReview" required>
                         </div>
+
+                        <!-- 숨김 주소 -->
+                        <input type="hidden" id="cafeLat">
+                        <input type="hidden" id="cafeLng">
+                        <input type="hidden" id="cafeAddress">
+
                         <div class="text-center">
                             <button type="submit" class="btn btn-brown px-4 py-2 rounded-pill shadow-sm">
                                 <i class="fa-solid fa-plus me-1"></i> 등록
@@ -239,134 +361,228 @@
         </div>
     </section>
 
+    <!-- 이미지 모달 -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content bg-transparent border-0 shadow-none">
+      <div class="modal-body text-center p-0">
+        <img id="modalImage" src="" class="img-fluid rounded shadow-lg" alt="원본 이미지">
+      </div>
+    </div>
+  </div>
+</div>
+
+
     <footer class="py-4 bg-body-tertiary text-center small text-body-secondary">
         © <span id="year"></span> 나의 추억 페이지
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-         new fullpage('#fullpage', {
-      autoScrolling: true,
-      navigation: true
-    });
-
-
-    const themeToggle = document.getElementById('themeToggle');
-    const docEl = document.documentElement;
-    const THEME_KEY = 'onepage-theme';
-    const savedTheme = localStorage.getItem(THEME_KEY);
-    if (savedTheme) docEl.setAttribute('data-bs-theme', savedTheme);
-
-    themeToggle.addEventListener('click', () => {
-      const cur = docEl.getAttribute('data-bs-theme') || 'light';
-      const next = cur === 'light' ? 'dark' : 'light';
-      docEl.setAttribute('data-bs-theme', next);
-      localStorage.setItem(THEME_KEY, next);
-    });
-
-    const memoryModal = document.getElementById('memoryModal');
-    if (memoryModal) {
-      memoryModal.addEventListener('show.bs.modal', event => {
-        const button = event.relatedTarget;
-        const title = button?.getAttribute('data-title') || '추억';
-        const imgUrl = button?.getAttribute('data-img');
-        document.getElementById('modalTitle').textContent = title;
-        const modalImg = document.getElementById('modalImg');
-        modalImg.src = imgUrl;
-        modalImg.alt = title;
-      });
-    }
-
         document.getElementById('year').textContent = new Date().getFullYear();
 
-        const cafeForm = document.getElementById("cafeForm");
-        const cafeList = document.getElementById("cafe-list");
 
-        // === LocalStorage JSON 관리 함수 ===
-        function getCafes() {
-            return JSON.parse(localStorage.getItem("cafes")) || [];
-        }
-        function saveCafes(cafes) {
-            localStorage.setItem("cafes", JSON.stringify(cafes));
-        }
-        function addCafe(cafe) {
-            const cafes = getCafes();
-            cafes.push(cafe);
-            saveCafes(cafes);
-        }
-        function removeCafe(index) {
-            const cafes = getCafes();
-            cafes.splice(index, 1);
-            saveCafes(cafes);
-        }
-
-        // DOM에 카페 추가
-        function appendCafe(cafe, photos = [], index) {
-            const cafeCard = document.createElement("div");
-            cafeCard.classList.add("container", "cafe-section", "mb-4");
-
-            cafeCard.innerHTML = `
-      <div class="d-flex justify-content-between align-items-start">
-        <h2 class="h5 fw-bold mb-3">${cafe.name}</h2>
-        <i class="fa-solid fa-trash-can text-danger delete-icon" style="cursor:pointer;"></i>
-      </div>
-      <div class="d-flex flex-wrap gap-2 cafe-tags mb-4">
-        ${cafe.tags.map(tag => `<span class="badge rounded-pill">${tag}</span>`).join("")}
-      </div>
-      <div class="row g-4">
-        <div class="col-md-6 cafe-photo">
-          <h6 class="fw-semibold mb-2 text-brown">PHOTO</h6>
-          <div class="row g-3">
-            ${photos.map(photo => `
-              <div class="col-6"><img src="${photo}" class="w-100 shadow-sm" alt="cafe photo"></div>
-            `).join("")}
-          </div>
-        </div>
-        <div class="col-md-6">
-          <h6 class="fw-semibold mb-2 text-brown">한줄후기</h6>
-          <div class="cafe-review">${cafe.review}</div>
-        </div>
-      </div>
-    `;
-
-            cafeCard.querySelector(".delete-icon").addEventListener("click", () => {
-                if (confirm("이 카페를 삭제할까요?")) {
-                    removeCafe(index);
-                    cafeCard.remove();
-                }
-            });
-
-            cafeList.appendChild(cafeCard);
-        }
-
-        // 초기 로드
-        function loadCafes() {
-            const cafes = getCafes();
-            cafeList.innerHTML = "";
-            cafes.forEach((cafe, i) => appendCafe(cafe, [], i));
-        }
-
-        // 등록 이벤트
-        cafeForm.addEventListener("submit", function (e) {
-            e.preventDefault();
-            const name = document.getElementById("cafeName").value;
-            const tags = document.getElementById("cafeTags").value.split(",").map(t => t.trim()).filter(Boolean);
-            const review = document.getElementById("cafeReview").value;
-            const files = document.getElementById("cafePhotos").files;
-
-            const photos = [];
-            for (let file of files) {
-                photos.push(URL.createObjectURL(file));
-            }
-
-            const newCafe = { name, tags, review };
-            addCafe(newCafe);
-            appendCafe(newCafe, photos, getCafes().length - 1);
-            cafeForm.reset();
+        const themeToggle = document.getElementById('themeToggle');
+        const docEl = document.documentElement;
+        const THEME_KEY = 'onepage-theme';
+        const savedTheme = localStorage.getItem(THEME_KEY);
+        if (savedTheme) docEl.setAttribute('data-bs-theme', savedTheme);
+        themeToggle.addEventListener('click', () => {
+            const cur = docEl.getAttribute('data-bs-theme') || 'light';
+            const next = cur === 'light' ? 'dark' : 'light';
+            docEl.setAttribute('data-bs-theme', next);
+            localStorage.setItem(THEME_KEY, next);
         });
 
-        document.addEventListener("DOMContentLoaded", loadCafes);
+
+        function getCafes() { return JSON.parse(localStorage.getItem('cafes')) || []; }
+        function saveCafes(cafes) { localStorage.setItem('cafes', JSON.stringify(cafes)); }
+        function addCafe(cafe) { const cs = getCafes(); cs.push(cafe); saveCafes(cs); }
+        function removeCafe(index) { const cs = getCafes(); cs.splice(index, 1); saveCafes(cs); }
+
+
+        function appendCafe(cafe, photos = [], index) {
+            const wrap = document.createElement('div');
+            wrap.className = 'container cafe-section mb-4';
+            const mapId = `map-${index}-${Date.now()}`;
+            wrap.innerHTML = `
+                <div class="d-flex justify-content-between align-items-start">
+                <h2 class="h5 fw-bold mb-3">${cafe.name}</h2>
+                <i class="fa-solid fa-trash-can text-danger delete-icon" style="cursor:pointer;"></i>
+                </div>
+                <div class="d-flex flex-wrap gap-2 cafe-tags mb-4">
+                ${(cafe.tags || []).map(t => `<span class="badge rounded-pill">${t}</span>`).join('')}
+                </div>
+                <div class="row g-4">
+                <div class="col-md-6 cafe-photo">
+                    <h6 class="fw-semibold mb-2 text-brown">PHOTO</h6>
+                    <div class="row g-3">
+            ${photos.map((p, i) => {
+                            let colClass = 'col-6'; // 기본 2장이면 반반
+                            if (photos.length === 1) colClass = 'col-12'; // 사진 1장이면 전체 폭
+                            else if (photos.length === 3) colClass = 'col-4'; // 사진 3장이면 3등분
+                            return `<div class="${colClass}"><img src="${p}" class="w-100 shadow-sm rounded-3" alt="cafe photo"></div>`;
+                        }).join('')}
+            </div>
+
+                </div>
+                <div class="col-md-6 d-flex flex-column justify-content-between">
+                    <div>
+                    <h6 class="fw-semibold mb-2 text-brown">한줄후기</h6>
+                    <div class="cafe-review">${cafe.review || ''}</div>
+                    </div>
+                    <div>
+                    <h6 class="fw-semibold mt-3 mb-2 text-brown">카페 위치 보기</h6>
+                    ${cafe.address ? `<div class="small text-muted mb-2">
+                        <i class="fa-solid fa-location-dot me-1"></i>${cafe.address}
+                    </div>` : ''}
+                    <div id="${mapId}" style="width:100%;height:220px;border-radius:10px;"></div>
+                    </div>
+                </div>
+                </div>
+            `;
+            // 삭제
+            wrap.querySelector('.delete-icon').addEventListener('click', () => {
+                if (confirm('이 카페를 삭제할까요?')) { removeCafe(index); wrap.remove(); }
+            });
+            document.getElementById('cafe-list').appendChild(wrap);
+
+            // 지도
+            if (cafe.lat && cafe.lng) {
+                const map = new kakao.maps.Map(document.getElementById(mapId), {
+                    center: new kakao.maps.LatLng(cafe.lat, cafe.lng), level: 3
+                });
+                new kakao.maps.Marker({ position: new kakao.maps.LatLng(cafe.lat, cafe.lng), map });
+            }
+
+        }
+
+        /* ====== 초기 로드: 저장된 카페 ====== */
+        function loadCafes() {
+            const cafes = getCafes();
+            cafes.forEach((c, i) => appendCafe(c, [], i));
+        }
+
+        /* ====== 예시 지도 ====== */
+        function initFixedExample() {
+            const el = document.getElementById('map-fixed');
+            if (!el) return;
+            const map = new kakao.maps.Map(el, { center: new kakao.maps.LatLng(37.5665, 126.9780), level: 7 });
+            const places = new kakao.maps.services.Places();
+
+            // 키워드 검색
+            places.keywordSearch('로스트앤베이크 가락점', (data, status) => {
+                if (status !== kakao.maps.services.Status.OK || !data.length) return;
+                const p = data[0]; // 가장 관련 높은 결과
+                const latlng = new kakao.maps.LatLng(p.y, p.x);
+                map.setLevel(3); map.setCenter(latlng);
+                new kakao.maps.Marker({ position: latlng, map });
+
+                // ✅ span 안에 주소 넣기
+                const addrBox = document.querySelector('#map-fixed-addr span');
+                if (addrBox) addrBox.textContent = p.road_address_name || p.address_name || '';
+            });
+        }
+
+        /* ====== 폼: 지도/검색/선택 ====== */
+        function initForm() {
+            const selectMapEl = document.getElementById('selectMap');
+            const selectMap = new kakao.maps.Map(selectMapEl, {
+                center: new kakao.maps.LatLng(37.5665, 126.9780), level: 7
+            });
+            const places = new kakao.maps.services.Places();
+            const geocoder = new kakao.maps.services.Geocoder();
+            const resultsEl = document.getElementById('searchResults');
+            const keywordEl = document.getElementById('placeKeyword');
+            const chosenAddrEl = document.getElementById('chosenAddress');
+            let selMarker;
+
+            function setSelected(latlng) {
+                document.getElementById('cafeLat').value = latlng.getLat();
+                document.getElementById('cafeLng').value = latlng.getLng();
+                if (selMarker) selMarker.setMap(null);
+                selMarker = new kakao.maps.Marker({ position: latlng, map: selectMap });
+            }
+
+            // 지도 클릭으로 선택
+            kakao.maps.event.addListener(selectMap, 'click', (e) => {
+                setSelected(e.latLng);
+            });
+
+            // 검색 실행
+            function doSearch() {
+                const q = (keywordEl.value || '').trim();
+                resultsEl.innerHTML = '';
+                if (!q) return;
+                places.keywordSearch(q, (data, status) => {
+                    if (status !== kakao.maps.services.Status.OK || !data.length) {
+                        resultsEl.innerHTML = '<li class="list-group-item">검색 결과가 없어요.</li>'; return;
+                    }
+                    const bounds = new kakao.maps.LatLngBounds();
+                    data.forEach(item => {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item result-item';
+                        li.innerHTML = `<strong>${item.place_name}</strong><br><small class="text-muted">${item.road_address_name || item.address_name || ''}</small>`;
+                        li.addEventListener('click', () => {
+                            const latlng = new kakao.maps.LatLng(item.y, item.x);
+                            selectMap.setLevel(3); selectMap.panTo(latlng);
+                            setSelected(latlng, item.road_address_name || item.address_name || '');
+                        });
+                        resultsEl.appendChild(li);
+                        bounds.extend(new kakao.maps.LatLng(item.y, item.x));
+                    });
+                    selectMap.setBounds(bounds);
+                });
+            }
+            document.getElementById('btnSearch').addEventListener('click', doSearch);
+            keywordEl.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); doSearch(); } });
+
+            // 폼 제출
+            document.getElementById('cafeForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('cafeName').value.trim();
+                const tags = document.getElementById('cafeTags').value.split(',').map(t => t.trim()).filter(Boolean);
+                const review = document.getElementById('cafeReview').value.trim();
+                const lat = parseFloat(document.getElementById('cafeLat').value);
+                const lng = parseFloat(document.getElementById('cafeLng').value);
+                const address = document.getElementById('cafeAddress').value;
+
+                // 사진은 즉시 미리보기만 (저장 X)
+                const files = document.getElementById('cafePhotos').files;
+                const photos = [];
+                for (let file of files) { photos.push(URL.createObjectURL(file)); }
+
+                const newCafe = { name, tags, review, lat, lng, address };
+                addCafe(newCafe);
+                appendCafe(newCafe, photos, getCafes().length - 1);
+                e.target.reset();
+                resultsEl.innerHTML = '';
+                chosenAddrEl.textContent = '';
+                if (selMarker) { selMarker.setMap(null); selMarker = null; }
+            });
+        }
+
+        // 모달 참조
+        const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+        const modalImage = document.getElementById('modalImage');
+
+        document.addEventListener('click', function(e) {
+            if (e.target.tagName === 'IMG' && e.target.closest('.cafe-photo')) {
+                modalImage.src = e.target.src; 
+                imageModal.show();
+            }
+        });
+
+
+        /* ====== 실행 순서 ====== */
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCafes();
+            initFixedExample();
+            initForm();
+        });
     </script>
+
+    
 </body>
 
 </html>
