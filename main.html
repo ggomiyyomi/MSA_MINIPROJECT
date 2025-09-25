@@ -12,27 +12,50 @@
   <!-- fullPage.js CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullpage.js/dist/fullpage.min.css">
 
-  <!-- Font Awesome (SNS 아이콘용) -->
-  <!-- Font Awesome 6 (최신) -->
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
 
   <style>
     .hero {
-      display: grid;
-      place-items: center;
-      background:
-        radial-gradient(ellipse at top, rgba(111, 66, 193, .15), transparent 60%),
-        radial-gradient(ellipse at bottom, rgba(13, 110, 253, .15), transparent 60%),
-        url("https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=1600&auto=format&fit=crop") center/cover no-repeat;
-      color: #fff;
       position: relative;
+      background: #fff; /* 흰 배경 */
+      overflow: hidden;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
     }
 
-    .hero>.content {
+    #sprayCanvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+    }
+
+    .hero .content {
       position: relative;
       z-index: 1;
-      
+      color: #333;
+    }
+
+    /* 향수병 아이콘 */
+    .perfume {
+      position: absolute;
+      font-size: 60px;
+      color: #444;
+      opacity: 0;
+      transform: rotate(-20deg);
+      animation-duration: 0.8s;
+      animation-fill-mode: forwards;
+      z-index: 2;
+    }
+
+    @keyframes sprayMotion {
+      0%   { transform: rotate(-20deg) scale(0.8); opacity: 0; }
+      20%  { transform: rotate(-10deg) scale(1); opacity: 1; }
+      60%  { transform: rotate(-15deg) scale(1); opacity: 1; }
+      100% { transform: rotate(-20deg) scale(0.9); opacity: 0; }
     }
 
     .section-title {
@@ -50,9 +73,7 @@
       z-index: 1030;
     }
 
-    
-
-    /* 🌟 3D 플립 카드 */
+    /* 카드 디자인 그대로 유지 */
     .memory-card {
       cursor: pointer;
       width: 100%;
@@ -60,7 +81,6 @@
       position: relative;
       perspective: 1000px;
     }
-
     .front,
     .back {
       width: 100%;
@@ -74,7 +94,6 @@
       border-radius: 12px;
       box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
     }
-
     .front img {
       width: 100%;
       height: 100%;
@@ -82,17 +101,13 @@
       border-radius: 12px;
       display: block;
     }
-
     .front {
       transform: rotateY(0deg);
       position: relative;
     }
-
-    /* 🏷️ 이름 오버레이 */
     .name-overlay {
       position: absolute;
-      bottom: 0;
-      left: 0;
+      bottom: 0; left: 0;
       width: 100%;
       background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
       color: #fff;
@@ -102,7 +117,6 @@
       border-radius: 0 0 12px 12px;
       text-align: center;
     }
-
     .back {
       background: #f1f1f1;
       color: #2c3e50;
@@ -113,23 +127,12 @@
       text-align: center;
       padding: 1.2rem;
     }
-
-    .back-content h5 {
-      font-size: 1.2rem;
-      margin-bottom: .3rem;
-    }
-
-    .back-content p {
-      font-size: 0.9rem;
-      margin-bottom: 1rem;
-    }
-
+    .back-content h5 { font-size: 1.2rem; margin-bottom: .3rem; }
+    .back-content p { font-size: 0.9rem; margin-bottom: 1rem; }
     .sm a {
       display: inline-flex;
-      width: 50px;
-      height: 50px;
-      justify-content: center;
-      align-items: center;
+      width: 50px; height: 50px;
+      justify-content: center; align-items: center;
       color: #2c3e50;
       font-size: 30px;
       transition: 0.4s;
@@ -137,38 +140,20 @@
       margin: 0 4px;
       text-decoration: none;
     }
-
-    .sm a:hover {
-      background: #2c3e50;
-      color: white;
-    }
-
-    .memory-card:hover>.front {
-      transform: rotateY(-180deg);
-    }
-
-    .memory-card:hover>.back {
-      transform: rotateY(0deg);
-    }
-
-    /* 📐 5개 고정 그리드 */
+    .sm a:hover { background: #2c3e50; color: white; }
+    .memory-card:hover>.front { transform: rotateY(-180deg); }
+    .memory-card:hover>.back { transform: rotateY(0deg); }
     .memory-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
       gap: 1.5rem;
       justify-items: center;
     }
-
     @media (max-width: 992px) {
-      .memory-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
+      .memory-grid { grid-template-columns: repeat(2, 1fr); }
     }
-
     @media (max-width: 576px) {
-      .memory-grid {
-        grid-template-columns: 1fr;
-      }
+      .memory-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -176,7 +161,7 @@
 <body>
 
   <!-- Nav -->
-  <nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top shadow-sm">
+  <nav class="navbar navbar-expand-lg sticky-top shadow-sm">
     <div class="container">
       <a class="navbar-brand fw-bold" href="#top">My Memory</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"
@@ -204,11 +189,13 @@
 
     <!-- Hero -->
     <div class="section hero">
-      <div class="content text-center container">
+      <canvas id="sprayCanvas"></canvas>
+      <div class="content container">
         <h1 class="display-5 fw-bold">2팀</h1>
         <p class="lead mb-4">사진 몇 장, 한 곡의 음악, 그리고 짧은 이야기로 기록하는 나만의 페이지.</p>
-        <a href="#" onclick="fullpage_api.moveTo(2); return false;" class="btn btn-light btn-lg">시작하기</a>
+        <a href="#" onclick="fullpage_api.moveTo(2); return false;" class="btn btn-dark btn-lg">시작하기</a>
       </div>
+      <i id="perfume" class="fas fa-spray-can perfume"></i>
     </div>
 
     <!-- Memories -->
@@ -216,106 +203,21 @@
       <section id="memories" class="py-5">
         <div class="container">
           <h2 class="section-title">Hobby</h2>
-
           <div class="memory-grid">
-            <!-- 카드 1 -->
-            <div class="memory-card" data-bs-toggle="modal" data-bs-target="#memoryModal"
-              data-title="희민의 봄 소풍" data-img="https://picsum.photos/1200/800?random=1">
-              <div class="front">
-                <img src="https://picsum.photos/800/600?random=1" alt="봄 소풍">
-                <div class="name-overlay">김가연</div>
-              </div>
-              <div class="back">
-                <div class="back-content">
-                  <h5>봄 소풍</h5>
-                  <p>따뜻한 햇살 아래 피크닉, 잔디와 샌드위치.</p>
-                  <div class="sm"><a href="#"><i class="fab fa-instagram"></i></a></div>
-                </div>
-              </div>
-            </div>
-            <!-- 카드 2 -->
-            <div class="memory-card" data-bs-toggle="modal" data-bs-target="#memoryModal"
-              data-title="지현의 첫 카페" data-img="https://picsum.photos/1200/800?random=2">
-              <div class="front">
-                <img src="https://picsum.photos/800/600?random=2" alt="첫 카페">
-                <div class="name-overlay">김소희</div>
-              </div>
-              <div class="back">
-                <div class="back-content">
-                  <h5>첫 카페</h5>
-                  <p>동네에서 찾은 숨은 보석 같은 카페.</p>
-                  <div class="sm"><a href="#"><i class="fab fa-instagram"></i></a></div>
-                </div>
-              </div>
-            </div>
-            <!-- 카드 3 -->
-            <div class="memory-card" data-bs-toggle="modal" data-bs-target="#memoryModal"
-              data-title="수빈의 우중 산책" data-img="https://picsum.photos/1200/800?random=3">
-              <div class="front">
-                <img src="https://picsum.photos/800/600?random=3" alt="우중 산책">
-                <div class="name-overlay">서희정</div>
-              </div>
-              <div class="back">
-                <div class="back-content">
-                  <h5>베이킹</h5>
-                  <p>밥보다 빵이 좋아 인간</p>
-                  <div class="sm"><a href="#"><i class="fas fa-regular fa-bread-slice"></i></a></div>
-                </div>
-              </div>
-            </div>
-            <!-- 카드 4 -->
-            <div class="memory-card" data-bs-toggle="modal" data-bs-target="#memoryModal"
-              data-title="정우의 겨울 산행" data-img="https://picsum.photos/1200/800?random=4">
-              <div class="front">
-                <img src="https://picsum.photos/800/600?random=4" alt="겨울 산행">
-                <div class="name-overlay">이재건</div>
-              </div>
-              <div class="back">
-                <div class="back-content">
-                  <h5>겨울 산행</h5>
-                  <p>눈 덮인 산길을 함께 오른 하루.</p>
-                  <div class="sm"><a href="#"><i class="fab fa-instagram"></i></a></div>
-                </div>
-              </div>
-            </div>
-            <!-- 카드 5 -->
-            <div class="memory-card" data-bs-toggle="modal" data-bs-target="#memoryModal"
-              data-title="소연의 여름 바다" data-img="https://picsum.photos/1200/800?random=5">
-              <div class="front">
-                <img src="https://picsum.photos/800/600?random=5" alt="여름 바다">
-                <div class="name-overlay">정현목</div>
-              </div>
-              <div class="back">
-                <div class="back-content">
-                  <h5>여름 바다</h5>
-                  <p>시원한 파도소리와 모래 위의 발자국.</p>
-                  <div class="sm"><a href="#"><i class="fab fa-instagram"></i></a></div>
-                </div>
-              </div>
-            </div>
+            <!-- 카드 예시 5개 -->
+            <div class="memory-card"><div class="front"><img src="https://picsum.photos/800/600?random=1"><div class="name-overlay">김가연</div></div><div class="back"><div class="back-content"><h5>봄 소풍</h5></div></div></div>
+            <div class="memory-card"><div class="front"><img src="https://picsum.photos/800/600?random=2"><div class="name-overlay">김소희</div></div><div class="back"><div class="back-content"><h5>첫 카페</h5></div></div></div>
+            <div class="memory-card"><div class="front"><img src="https://picsum.photos/800/600?random=3"><div class="name-overlay">서희정</div></div><div class="back"><div class="back-content"><h5>베이킹</h5></div></div></div>
+            <div class="memory-card"><div class="front"><img src="https://picsum.photos/800/600?random=4"><div class="name-overlay">이재건</div></div><div class="back"><div class="back-content"><h5>겨울 산행</h5></div></div></div>
+            <div class="memory-card"><div class="front"><img src="https://picsum.photos/800/600?random=5"><div class="name-overlay">정현목</div></div><div class="back"><div class="back-content"><h5>여름 바다</h5></div></div></div>
           </div>
-
-          <!-- 기존 모달 유지 -->
-          <div class="modal fade" id="memoryModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-              <div class="modal-content">
-                <img id="modalImg" alt="확대 이미지" class="w-100 rounded-top">
-                <div class="modal-body">
-                  <h5 id="modalTitle" class="mb-0">제목</h5>
-                </div>
-              </div>
-            </div>
-          </div>
-
         </div>
       </section>
     </div>
   </div>
 
   <!-- Quick CTA -->
-  <a class="btn btn-primary rounded-pill shadow fixed-cta" href="#" onclick="fullpage_api.moveTo(2); return false;">
-    📸 사진 보기
-  </a>
+  <a class="btn btn-primary rounded-pill shadow fixed-cta" href="#" onclick="fullpage_api.moveTo(2); return false;">📸 사진 보기</a>
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -323,17 +225,13 @@
   <script src="https://cdn.jsdelivr.net/npm/fullpage.js/dist/fullpage.min.js"></script>
 
   <script>
-    new fullpage('#fullpage', {
-      autoScrolling: true,
-      navigation: true
-    });
+    new fullpage('#fullpage', { autoScrolling: true, navigation: true });
 
     const themeToggle = document.getElementById('themeToggle');
     const docEl = document.documentElement;
     const THEME_KEY = 'onepage-theme';
     const savedTheme = localStorage.getItem(THEME_KEY);
     if (savedTheme) docEl.setAttribute('data-bs-theme', savedTheme);
-
     themeToggle.addEventListener('click', () => {
       const cur = docEl.getAttribute('data-bs-theme') || 'light';
       const next = cur === 'light' ? 'dark' : 'light';
@@ -341,19 +239,52 @@
       localStorage.setItem(THEME_KEY, next);
     });
 
-    const memoryModal = document.getElementById('memoryModal');
-    if (memoryModal) {
-      memoryModal.addEventListener('show.bs.modal', event => {
-        const button = event.relatedTarget;
-        const title = button?.getAttribute('data-title') || '추억';
-        const imgUrl = button?.getAttribute('data-img');
-        document.getElementById('modalTitle').textContent = title;
-        const modalImg = document.getElementById('modalImg');
-        modalImg.src = imgUrl;
-        modalImg.alt = title;
+    // 🌈 파티클 + 향수병 모션
+    const colors = ["#9b59b6","#2ecc71","#f1c40f","#3498db","#e67e22"];
+    const canvas = document.getElementById("sprayCanvas");
+    const ctx = canvas.getContext("2d");
+    const perfume = document.getElementById("perfume");
+
+    function resizeCanvas() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+    window.addEventListener("resize", resizeCanvas); resizeCanvas();
+
+    class Particle {
+      constructor(x,y,color){ this.x=x; this.y=y; this.radius=Math.random()*10+6; this.color=color; }
+      draw(){ ctx.beginPath(); ctx.arc(this.x,this.y,this.radius,0,Math.PI*2); ctx.fillStyle=this.color; ctx.fill(); }
+    }
+    let particles = [];
+    function createSpray(point){
+      for(let i=0;i<60;i++){
+        const angle = Math.random()*Math.PI/2 - Math.PI/4;
+        const dist = Math.random()*100;
+        const x = point.x + Math.cos(angle)*dist;
+        const y = point.y - Math.sin(angle)*dist;
+        const color = colors[Math.floor(Math.random()*colors.length)];
+        particles.push(new Particle(x,y,color));
+      }
+      drawParticles();
+    }
+    function drawParticles(){ ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p=>p.draw()); }
+
+    function spraySequence(){
+      const sprayPoints=[
+        {x:canvas.width/2,y:canvas.height/2},         // 중앙
+        {x:canvas.width/5,y:canvas.height/2},         // 왼쪽
+        {x:(canvas.width*4)/5,y:canvas.height/2},     // 오른쪽
+        {x:canvas.width/2,y:canvas.height/4},         // 위
+        {x:canvas.width/2,y:(canvas.height*3)/4}      // 아래
+      ];
+      sprayPoints.forEach((pt,i)=>{
+        setTimeout(()=>{
+          perfume.style.left=`${pt.x-30}px`;
+          perfume.style.top=`${pt.y-30}px`;
+          perfume.style.animationName="sprayMotion";
+          setTimeout(()=>createSpray(pt),200);
+          setTimeout(()=>{ perfume.style.animationName=""; },900);
+        }, i*1500);
       });
     }
+    spraySequence();
   </script>
 </body>
-
 </html>
