@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>[이름]의 추억 페이지</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="preload" href="/fonts/BMHANNAPro.ttf" as="font" type="font/ttf" crossorigin>
+
+  <style>
+    /* ===============================
+   Fonts
+================================= */
+@font-face{
+  font-family: 'BMHANNAPro';
+  src: url('/fonts/BMHANNAPro.ttf') format('truetype');
+  font-display: swap;
+}
+
+/* ===============================
+   Theme (검은계열 네온 다크)
+================================= */
+:root{
+  --nfx-red:#E50914;
+  --ink:#e5e7eb;        /* 본문 텍스트 */
+  --muted:#cbd5e1;      /* 보조 텍스트 */
+  --bg1:#0b0b0d;        /* 배경 상단 */
+  --bg2:#111113;        /* 배경 중간 */
+  --tile:#0f121a;       /* 카드/타일 */
+  --ring:rgba(255,255,255,.14);
+  --shadow:0 22px 60px rgba(0,0,0,.55);
+}
+
+html,body{ height:100%; }
+
+/* ===============================
+   Scrollbar 숨김 (전역)
+================================= */
+/* Firefox */
+* { scrollbar-width: none; }
+/* IE/Legacy Edge */
+* { -ms-overflow-style: none; }
+/* WebKit (Chrome/Safari/New Edge/Opera) */
+*::-webkit-scrollbar { display: none; width:0; height:0; }
+
+body{
+  font-family:'BMHANNAPro','Noto Sans KR',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(1200px 700px at 50% -10%, rgba(229,9,20,.18), transparent 60%),
+    linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 60%, var(--bg1) 100%);
+  overflow-x:hidden;
+}
+
+/* ===============================
+   Navbar (상단 투명 → 스크롤 시 솔리드)
+================================= */
+.navbar{
+  position:sticky; top:0; z-index:1040;
+  background:transparent !important; transition: background .25s ease, border-color .25s ease;
+  border-bottom:1px solid transparent;
+}
+.navbar.nav-solid{
+  background:rgba(17,17,19,.86)!important; backdrop-filter: blur(8px);
+  border-bottom-color: rgba(255,255,255,.08);
+}
+.navbar .navbar-brand, 
+.navbar .nav-link{ color:#f3f4f6 !important; }
+
+/* ===============================
+   Hero (Netflix Title Detail)
+================================= */
+.hero{
+  position:relative; min-height:64vh; display:flex; align-items:flex-end;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.2) 0%, rgba(0,0,0,.65) 65%),
+    url("/images/mok/bunsik.png") center/cover no-repeat;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  box-shadow: inset 0 -60px 100px -60px rgba(0,0,0,.65);
+  isolation:isolate;
+}
+.hero-inner{ width:100%; max-width:1200px; margin:0 auto; padding:48px 16px; }
+.hero-meta{
+  display:flex; align-items:flex-start; gap:18px; flex-wrap:wrap;
+  text-shadow:0 2px 18px rgba(0,0,0,.5);
+}
+
+/* 아바타 */
+.avatar{
+  width:120px; height:120px; aspect-ratio:1/1;
+  border-radius:14px; object-fit:cover; display:block;
+  box-shadow: var(--shadow); border:2px solid rgba(255,255,255,.6);
+}
+
+.title-block h1{ margin:0; font-size:clamp(32px,6vw,64px); font-weight:900; letter-spacing:.02em; }
+.title-block .desc{ color:var(--muted); margin:.25rem 0 0; }
+
+.hero-actions{
+  margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;
+}
+.btn-cta{
+  display:inline-flex; align-items:center; gap:8px; font-weight:900;
+  background:var(--nfx-red); border:1px solid var(--nfx-red); color:#fff; border-radius:10px; padding:.6rem 1rem;
+  box-shadow:0 12px 30px rgba(0,0,0,.35);
+}
+.btn-ghost{
+  display:inline-flex; align-items:center; gap:8px; font-weight:900;
+  background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.18); color:#fff; border-radius:10px; padding:.6rem 1rem;
+}
+
+/* 고정 뒤로가기 버튼 */
+.fixed-back { position: fixed; left: 16px; bottom: 16px; z-index: 1030; }
+
+/* ===============================
+   Section Head
+================================= */
+.section-head{ display:flex; align-items:center; gap:.6rem; margin:18px 0 10px; }
+.section-head .bar{
+  width:10px; height:26px; border-radius:6px;
+  background: linear-gradient(180deg,#f43f5e,#f59e0b);
+  box-shadow: 0 0 18px rgba(244,63,94,.35);
+}
+.section-head .title{ font-weight:900; letter-spacing:.02em; }
+.content-wrap{ max-width:1200px; margin:0 auto; padding:0 16px; }
+
+/* 글래스 패널 */
+.panel{
+  background: rgba(17,17,19,.7);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px; padding:16px; box-shadow:0 18px 44px rgba(0,0,0,.35);
+}
+
+/* ===============================
+   Rails (가로 스크롤 갤러리)
+================================= */
+.rail{ position:relative; margin:0 auto 6px; max-width:1200px; padding:0 16px; }
+.rail .subtitle{ color:var(--muted); margin:0 0 8px 8px; }
+
+.row-scroll{
+  display:flex; gap:12px; 
+  overflow:auto; 
+  scroll-behavior:smooth; 
+  scroll-snap-type:x mandatory; 
+  padding-bottom:12px;
+
+  /* 개별 스크롤바 숨김 */
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
+}
+.row-scroll::-webkit-scrollbar { display:none; width:0; height:0; }
+
+.card-tile{
+  position:relative; width:320px; height:180px; border-radius:12px; overflow:hidden; flex:0 0 auto;
+  background: var(--tile);
+  box-shadow:0 16px 44px rgba(0,0,0,.45); scroll-snap-align: start;
+  transition: transform .2s ease, filter .2s ease;
+  border:1px solid rgba(255,255,255,.06);
+}
+.card-tile img{ width:100%; height:100%; object-fit:cover; display:block; }
+.card-tile .meta{
+  position:absolute; inset:auto 0 0 0; padding:10px 12px; color:#f3f4f6;
+  background: linear-gradient(180deg, transparent, rgba(0,0,0,.6));
+  display:flex; align-items:center; gap:8px; font-weight:800;
+}
+.card-tile:hover{ transform: translateY(-4px); filter:brightness(1.05); }
+
+.nav-btn{
+  position:absolute; top:50%; transform: translateY(-50%);
+  width:38px; height:56px; border-radius:8px; border:1px solid var(--ring);
+  background:rgba(17,17,19,.72); color:#fff; display:grid; place-items:center;
+  box-shadow:0 12px 30px rgba(0,0,0,.4); cursor:pointer; opacity:0; transition: opacity .2s ease;
+}
+.rail:hover .nav-btn{ opacity:1; }
+.nav-btn.left{ left:4px; } 
+.nav-btn.right{ right:4px; }
+
+/* ===============================
+   Footer
+================================= */
+footer.bg-body-tertiary{
+  background: rgba(17,17,19,.86)!important; backdrop-filter: blur(6px);
+  border-top:1px solid rgba(255,255,255,.08);
+  color:#cbd5e1 !important;
+}
+
+/* ===============================
+   My Food Journey (검은계열 톤)
+================================= */
+.journey-card{
+  --jc-from:#14161b;
+  --jc-mid:#0f1116;
+  --jc-to:#0b0c10;
+  border-radius:16px;
+  color: var(--ink);
+  background: linear-gradient(135deg, var(--jc-from) 0%, var(--jc-mid) 50%, var(--jc-to) 100%) !important;
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow: 0 18px 44px rgba(0,0,0,.35);
+  transition: filter .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+.journey-card:hover{
+  filter: brightness(1.03);
+  box-shadow: 0 22px 60px rgba(0,0,0,.45);
+}
+.journey-card .p-3{
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 18px;
+}
+.journey-card .badge{
+  background: rgba(255,255,255,0.14);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 0;
+  color: #f5f7fa;
+}
+.journey-card .opacity-75{
+  color: #d8dee9;
+  opacity: .85 !important;
+}
+.journey-chip{
+  display:inline-block;
+  padding:.35rem .8rem;
+  border-radius:999px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.16);
+  color:#fff;
+  font-weight:600;
+  font-size:.9rem;
+}
+
+/* ===============================
+   Responsive
+================================= */
+@media (max-width: 576px){
+  .journey-card{ border-radius:14px; }
+  .journey-card .p-3{ border-radius:14px; }
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- Nav (테마 토글 없음) -->
+  <nav class="navbar navbar-expand-lg bg-body-tertiary shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="index.html">건재이조의 취미생활</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"
+              aria-controls="nav" aria-expanded="false" aria-label="토글 내비게이션">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div id="nav" class="collapse navbar-collapse">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="canva.html">Canvas</a></li>
+          <li class="nav-item"><a class="nav-link" href="video.html">Video</a></li>
+          <li class="nav-item"><a class="nav-link" href="music.html">Music</a></li>
+          <li class="nav-item"><a class="nav-link" href="kanban-board.html">Kanban</a></li>
+          <li class="nav-item"><a class="nav-link" href="CafeMap.html">Map</a></li>
+        </ul>
+        <div class="d-flex gap-2 align-items-center">
+          <a class="btn btn-danger btn-sm" href="signup.html">회원가입</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="hero-meta">
+        <img src="/images/mok/hitory.png" alt="프로필" class="avatar" id="avatar">
+        <div class="title-block" id="titleBlock">
+          <h1 id="title">목이네</h1>
+          <p class="desc mb-0">음식과 함께하는 일상을 담아요 · 실패한 맛집도 솔직히!</p>
+          <div class="hero-actions" id="heroActions">
+            <a href="#about" class="btn-cta">소개 보기</a>
+            <a href="#gallery" class="btn-ghost">갤러리</a>
+            <a href="#memories" class="btn-ghost">My Food Journey</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="py-4">
+    <!-- About -->
+    <section id="about" class="content-wrap">
+      <div class="section-head">
+        <span class="bar"></span><h2 class="title m-0">About</h2>
+      </div>
+      <div class="panel">
+        <p class="mb-2">"인생은 너무 짧아서 맛없는 걸 먹을 시간이 없다"는 신념으로 살고 있는 평범한 먹보입니다.</p>
+        <p class="mb-0">실패한 맛집도 솔직하게 공유하니 참고하세요!</p>
+      </div>
+    </section>
+
+    <!-- Gallery: Netflix식 레일 -->
+    <section id="gallery" class="mt-4">
+      <div class="rail">
+        <div class="section-head">
+          <span class="bar"></span><h2 class="title m-0">Gallery</h2>
+        </div>
+        <p class="subtitle">스크롤해서 더 보기</p>
+        <button class="nav-btn left" aria-label="왼쪽으로 이동">‹</button>
+        <div class="row-scroll">
+          <a class="card-tile" href="/images/mok/don.jpeg" target="_blank" rel="noopener">
+            <img src="/images/mok/don.jpeg" alt="추억1">
+            <div class="meta">돈까스의 정석</div>
+          </a>
+          <a class="card-tile" href="/images/mok/ham.jpeg" target="_blank" rel="noopener">
+            <img src="/images/mok/ham.jpeg" alt="추억2">
+            <div class="meta">햄버거 한 입 행복</div>
+          </a>
+          <a class="card-tile" href="/images/mok/san.jpeg" target="_blank" rel="noopener">
+            <img src="/images/mok/san.jpeg" alt="추억3">
+            <div class="meta">산낙지 쫄깃</div>
+          </a>
+        </div>
+        <button class="nav-btn right" aria-label="오른쪽으로 이동">›</button>
+      </div>
+    </section>
+
+    <!-- My Food Journey (다크 톤 적용) -->
+    <section class="content-wrap mt-4" id="memories">
+      <div class="section-head">
+        <span class="bar"></span><h2 class="title m-0">My Food Journey</h2>
+      </div>
+      <div class="panel" style="padding:0;">
+        <!-- ✅ 인라인 파란 배경 제거 + journey-card 클래스 적용 -->
+        <div class="p-4 text-white journey-card">
+          <h6 class="fw-semibold mb-4 text-center">🍴 My Flavor Profile</h6>
+
+          <div class="text-center mb-4">
+            <span class="badge fs-6 px-3 py-2 me-2 mb-2">#맛집헌터</span>
+            <span class="badge fs-6 px-3 py-2 me-2 mb-2">#혼밥러버</span>
+            <span class="badge fs-6 px-3 py-2 me-2 mb-2">#가성비킹</span>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="p-3">
+                <div class="small mb-2 opacity-75">🍽️ 좋아하는 맛</div>
+                <div class="d-flex flex-wrap gap-1">
+                  <span class="badge rounded-pill" style="background: #2d3748">담백한맛</span>
+                  <span class="badge rounded-pill" style="background: #1a365d">시원한맛</span>
+                  <span class="badge rounded-pill" style="background: #ed8936">깔끔한맛</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="p-3">
+                <div class="small mb-2 opacity-75">📍 선호 장소</div>
+                <div class="d-flex flex-wrap gap-1">
+                  <span class="badge rounded-pill" style="background: #805ad5">골목대장</span>
+                  <span class="badge rounded-pill" style="background: #6b46c1">분식천국</span>
+                  <span class="badge rounded-pill" style="background: #d53f8c">카페순례</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /.journey-card -->
+      </div>
+    </section>
+
+    <!-- 비워둔 앵커 섹션 -->
+    <section id="media"></section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="mt-auto py-4 bg-body-tertiary text-center small">
+    © <span id="year"></span> Team 건재이조
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // 연도
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Nav 솔리드 전환
+    const nav = document.querySelector('.navbar');
+    const onScroll = ()=> nav.classList.toggle('nav-solid', window.scrollY > 24);
+    onScroll(); window.addEventListener('scroll', onScroll);
+
+    // 갤러리 레일 버튼
+    document.querySelectorAll('.rail').forEach(rail=>{
+      const scroller = rail.querySelector('.row-scroll');
+      const btnL = rail.querySelector('.nav-btn.left');
+      const btnR = rail.querySelector('.nav-btn.right');
+      const step = () => Math.min(600, Math.max(320, scroller.clientWidth * 0.85));
+      btnL?.addEventListener('click', ()=> scroller.scrollBy({left:-step(), behavior:'smooth'}));
+      btnR?.addEventListener('click', ()=> scroller.scrollBy({left: step(), behavior:'smooth'}));
+      rail.tabIndex = 0;
+      rail.addEventListener('keydown', (e)=>{
+        if(e.key === 'ArrowRight'){ e.preventDefault(); scroller.scrollBy({left: step(), behavior:'smooth'}); }
+        if(e.key === 'ArrowLeft'){ e.preventDefault(); scroller.scrollBy({left: -step(), behavior:'smooth'}); }
+      });
+    });
+
+    // 아바타 크기 = 제목 상단 ~ 히어로 액션 하단 (정사각)
+    function syncAvatar() {
+      const avatar = document.getElementById('avatar');
+      const title = document.getElementById('title');
+      const actions = document.getElementById('heroActions');
+      if (!avatar || !title) return;
+      const top = title.offsetTop;
+      const bottom = actions ? (actions.offsetTop + actions.offsetHeight) : (title.offsetTop + title.offsetHeight);
+      let size = Math.round(bottom - top);
+      size = Math.max(140, Math.min(340, size + 8)); // 안전 범위 + 여유
+      avatar.style.width = size + 'px';
+      avatar.style.height = size + 'px';
+    }
+    window.addEventListener('load', syncAvatar);
+    window.addEventListener('resize', syncAvatar);
+  </script>
+</body>
+</html>

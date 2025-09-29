@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>이재건</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    /* Fonts */
+@font-face{
+  font-family:'BMHANNAPro';
+  src:url('/fonts/BMHANNAPro.ttf') format('truetype');
+  font-display:swap;
+}
+
+/* ===== Color tokens ===== */
+:root{
+  --nfx-red:#E50914;
+  --ink:#e5e7eb; --muted:#cbd5e1;
+  --bg1:#0b0b0d; --bg2:#111113;
+  --tile:#171922; --ring:rgba(255,255,255,.14);
+  --shadow:0 22px 60px rgba(0,0,0,.55);
+}
+
+html,body{ height:100%; }
+
+/* ===== Global scrollbar hide (보이지만 않게) ===== */
+/* Firefox */
+* { scrollbar-width: none; }
+/* IE/Edge(레거시) */
+* { -ms-overflow-style: none; }
+/* WebKit (Chrome/Safari/new Edge) */
+*::-webkit-scrollbar { width:0; height:0; display:none; }
+
+body{
+  font-family:'BMHANNAPro','Noto Sans KR',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(1200px 700px at 50% -10%, rgba(229,9,20,.18), transparent 60%),
+    linear-gradient(180deg,var(--bg1) 0%, var(--bg2) 60%, var(--bg1) 100%);
+  overflow-x:hidden; /* 가로 스크롤만 차단 */
+}
+
+/* ===== Nav ===== */
+.navbar{
+  position:sticky; top:0; z-index:1040;
+  background:transparent !important; transition: background .25s ease, border-color .25s ease;
+  border-bottom:1px solid transparent;
+}
+.navbar.nav-solid{
+  background:rgba(17,17,19,.86)!important; backdrop-filter: blur(8px);
+  border-bottom-color: rgba(255,255,255,.08);
+}
+.navbar .navbar-brand, .navbar .nav-link{ color:#f3f4f6 !important; }
+
+/* ===== Hero ===== */
+.hero{
+  position:relative; min-height:68vh; display:flex; align-items:flex-end;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.2) 0%, rgba(0,0,0,.65) 65%),
+    url('/images/jaegeon/background.png') center/cover no-repeat;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  box-shadow: inset 0 -60px 100px -60px rgba(0,0,0,.65);
+  isolation:isolate;
+}
+.hero-inner{ width:100%; max-width:1200px; margin:0 auto; padding:48px 16px; }
+
+/* 상단 정렬 */
+.hero-meta{
+  display:flex; align-items:flex-start; gap:18px; flex-wrap:wrap;
+  text-shadow:0 2px 18px rgba(0,0,0,.5);
+}
+
+/* 아바타 */
+.avatar{
+  width:120px; height:120px; aspect-ratio:1/1;
+  border-radius:14px; object-fit:cover; display:block;
+  box-shadow: var(--shadow); border:2px solid rgba(255,255,255,.6);
+}
+
+.title-block h1{ margin:0; font-size:clamp(32px,6vw,64px); font-weight:900; letter-spacing:.02em; }
+.title-block .kicker{
+  display:inline-flex; align-items:center; gap:8px; font-weight:900; color:#fff;
+  background: rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18); border-radius:999px; padding:.25rem .6rem;
+  margin-bottom:6px;
+}
+.title-block .desc{ color:var(--muted); margin:.25rem 0 0; }
+
+.hero-actions{
+  margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;
+}
+.btn-cta{
+  display:inline-flex; align-items:center; gap:8px; font-weight:900;
+  background:var(--nfx-red); border:1px solid var(--nfx-red); color:#fff; border-radius:10px; padding:.6rem 1rem;
+  box-shadow:0 12px 30px rgba(0,0,0,.35);
+}
+.btn-ghost{
+  display:inline-flex; align-items:center; gap:8px; font-weight:900;
+  background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.18); color:#fff; border-radius:10px; padding:.6rem 1rem;
+}
+
+/* ===== Section head ===== */
+.section-head{ display:flex; align-items:center; gap:.6rem; margin:18px 0 10px; }
+.section-head .bar{
+  width:10px; height:26px; border-radius:6px;
+  background: linear-gradient(180deg,#f43f5e,#f59e0b);
+  box-shadow: 0 0 18px rgba(244,63,94,.35);
+}
+.section-head .title{ font-weight:900; letter-spacing:.02em; }
+
+/* ===== Rails ===== */
+.rail{ position:relative; margin:0 auto 6px; max-width:1200px; padding:0 16px; }
+.rail .subtitle{ color:var(--muted); margin:0 0 8px 8px; }
+
+/* 가로 스크롤(스크롤바 숨김 유지) */
+.row-scroll{
+  display:flex; gap:12px;
+  overflow:auto;              /* 스크롤은 가능 */
+  scroll-behavior:smooth;
+  scroll-snap-type:x mandatory;
+  padding-bottom:12px;
+}
+
+.card-tile{
+  position:relative; width:280px; height:160px; border-radius:12px; overflow:hidden; flex:0 0 auto;
+  background:#0f121a; box-shadow:0 16px 44px rgba(0,0,0,.45); scroll-snap-align: start;
+  transition: transform .2s ease, filter .2s ease;
+  border:1px solid rgba(255,255,255,.06);
+}
+.card-tile img{ width:100%; height:100%; object-fit:cover; display:block; }
+.card-tile .meta{
+  position:absolute; inset:auto 0 0 0; padding:10px 12px; color:#f3f4f6;
+  background: linear-gradient(180deg, transparent, rgba(0,0,0,.6));
+  display:flex; align-items:center; gap:8px; font-weight:800;
+}
+.card-tile:hover{ transform: translateY(-4px); filter:brightness(1.05); }
+
+.nav-btn{
+  position:absolute; top:50%; transform: translateY(-50%);
+  width:38px; height:56px; border-radius:8px; border:1px solid var(--ring);
+  background:rgba(17,17,19,.72); color:#fff; display:grid; place-items:center;
+  box-shadow:0 12px 30px rgba(0,0,0,.4); cursor:pointer; opacity:0; transition: opacity .2s ease;
+}
+.rail:hover .nav-btn{ opacity:1; }
+.nav-btn.left{ left:4px; } .nav-btn.right{ right:4px; }
+
+/* ===== Content / To-Do ===== */
+.content-wrap{ max-width:1200px; margin:0 auto; padding:0 16px; }
+.panel{
+  background: rgba(17,17,19,.7); border:1px solid rgba(255,255,255,.08);
+  border-radius:16px; padding:16px; box-shadow:0 18px 44px rgba(0,0,0,.35);
+}
+
+.todo-card .progress{ height:10px; background: rgba(255,255,255,.08); border-radius:999px; overflow:hidden; }
+.todo-card .progress-bar{ background: linear-gradient(90deg,#22d3ee,#E50914); }
+.todo-item{
+  display:flex; align-items:center; gap:.75rem;
+  background: rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:14px; padding:.6rem .7rem; margin-bottom:.6rem;
+}
+.todo-item.done{ opacity:.9; background:rgba(255,255,255,.03); }
+.todo-text{ flex:1; line-height:1.35; }
+.todo-text.done{ text-decoration:line-through; color:#94a3b8; }
+.pill{ border:none; border-radius:999px; padding:.35rem .65rem; font-size:.9rem; background:rgba(255,255,255,.08); }
+.btn-done{ background: rgba(34,197,94,.18); color:#d1fae5; border:0; }
+.btn-del{ background: rgba(239,68,68,.16); color:#fecaca; border:0; }
+.hint{ color:#94a3b8; }
+
+/* ===== Footer ===== */
+footer.bg-body-tertiary{
+  background: rgba(17,17,19,.86)!important; backdrop-filter: blur(6px);
+  border-top:1px solid rgba(255,255,255,.08);
+  color:#cbd5e1 !important;
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav class="navbar navbar-expand-lg bg-body-tertiary shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="index.html">건재이조의 취미생활</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"
+              aria-controls="nav" aria-expanded="false" aria-label="토글 내비게이션">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div id="nav" class="collapse navbar-collapse">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="canva.html">Canvas</a></li>
+          <li class="nav-item"><a class="nav-link" href="video.html">Video</a></li>
+          <li class="nav-item"><a class="nav-link" href="music.html">Music</a></li>
+          <li class="nav-item"><a class="nav-link" href="kanban-board.html">Kanban</a></li>
+          <li class="nav-item"><a class="nav-link" href="CafeMap.html">Map</a></li>
+        </ul>
+        <div class="d-flex gap-2 align-items-center">
+          <a class="btn btn-danger btn-sm" style="background:var(--nfx-red); border-color:var(--nfx-red);" href="signup.html">회원가입</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="hero-meta">
+        <img src="/images/jaegeon/jg_profile.png" alt="프로필" class="avatar" id="avatar">
+        <div class="title-block" id="titleBlock">
+          <h1 id="title">이재건</h1>
+          <p class="desc mb-0">5살 때 스타크래프트로 시작, 지금도 “즐겜” 중. 자전거로 바람 쐬는 것도 좋아해요.</p>
+          <div class="hero-actions" id="heroActions">
+            <a href="#about" class="btn-cta"><i class="fa-solid fa-circle-info"></i> 소개 보기</a>
+            <a href="#gallery" class="btn-ghost"><i class="fa-solid fa-images"></i> 갤러리</a>
+            <a href="#todo" class="btn-ghost"><i class="fa-solid fa-list-check"></i> 미니 To-Do</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="py-4">
+    <!-- About -->
+    <section id="about" class="content-wrap">
+      <div class="section-head">
+        <span class="bar"></span><h2 class="title m-0">About</h2>
+      </div>
+      <div class="panel">
+        <p class="mb-2">5살 때 스타크래프트로 게임을 시작해, 지금도 즐겁게 게임을 이어가고 있습니다.</p>
+        <p class="mb-0">자전거 타는 거 좋아합니다.</p>
+      </div>
+    </section>
+
+    <!-- Gallery -->
+    <section id="gallery" class="mt-4">
+      <div class="rail">
+        <div class="section-head">
+          <span class="bar"></span><h2 class="title m-0">Gallery</h2>
+        </div>
+        <p class="subtitle">스크롤해서 더 보기</p>
+        <button class="nav-btn left" aria-label="왼쪽으로 이동"><i class="fa-solid fa-chevron-left"></i></button>
+        <div class="row-scroll">
+          <a class="card-tile" href="/images/jaegeon/jg_ddarungi.jpg" target="_blank" rel="noopener">
+            <img src="/images/jaegeon/jg_ddarungi.jpg" alt="따릉이">
+            <div class="meta">따릉이 라이딩</div>
+          </a>
+          <a class="card-tile" href="/images/jaegeon/sannabi.jpg" target="_blank" rel="noopener">
+            <img src="/images/jaegeon/sannabi.jpg" alt="산나비">
+            <div class="meta">SANABI</div>
+          </a>
+          <a class="card-tile" href="/images/jaegeon/jg_majak.jpg" target="_blank" rel="noopener">
+            <img src="/images/jaegeon/jg_majak.jpg" alt="마작">
+            <div class="meta">마작 한 판</div>
+          </a>
+        </div>
+        <button class="nav-btn right" aria-label="오른쪽으로 이동"><i class="fa-solid fa-chevron-right"></i></button>
+      </div>
+    </section>
+
+    <!-- Mini To-Do -->
+    <section id="todo" class="content-wrap mt-4">
+      <div class="section-head">
+        <span class="bar"></span><h2 class="title m-0">이번 주 미니 To-Do 3</h2>
+      </div>
+      <div class="panel todo-card">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div class="d-flex align-items-center gap-2">
+            <span class="pill">🎯</span>
+            <strong class="mb-0">간단히 3개만 적어보세요</strong>
+          </div>
+          <button id="todoReset" class="btn btn-sm btn-outline-light">↻ 초기화</button>
+        </div>
+
+        <div class="progress mb-2">
+          <div id="todoProgress" class="progress-bar" style="width:0%"></div>
+        </div>
+        <p class="hint small mb-3" id="todoSummary">0/3 완료</p>
+
+        <div class="input-group input-group-sm mb-3">
+          <span class="input-group-text">✨</span>
+          <input id="todoInput" type="text" class="form-control" placeholder="이번 주 할 일 (최대 3개)">
+          <button id="todoAdd" class="btn btn-danger" style="background:var(--nfx-red); border-color:var(--nfx-red);">추가</button>
+        </div>
+
+        <ul id="todoList" class="list-unstyled m-0"></ul>
+        <p class="hint small mt-3 mb-0">완료하면 살짝 반짝! (브라우저에만 저장)</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="mt-auto py-4 bg-body-tertiary text-center small">
+    © <span id="year"></span> Team 건재이조
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Nav becomes solid after scroll
+    const nav = document.querySelector('.navbar');
+    const onScroll = ()=> nav.classList.toggle('nav-solid', window.scrollY > 24);
+    onScroll(); window.addEventListener('scroll', onScroll);
+
+    // Rail buttons
+    document.querySelectorAll('.rail').forEach(rail=>{
+      const scroller = rail.querySelector('.row-scroll');
+      const btnL = rail.querySelector('.nav-btn.left');
+      const btnR = rail.querySelector('.nav-btn.right');
+      const step = () => Math.min(600, Math.max(320, scroller.clientWidth * 0.85));
+
+      btnL?.addEventListener('click', ()=> scroller.scrollBy({left:-step(), behavior:'smooth'}));
+      btnR?.addEventListener('click', ()=> scroller.scrollBy({left: step(), behavior:'smooth'}));
+      rail.tabIndex = 0;
+      rail.addEventListener('keydown', (e)=>{
+        if(e.key === 'ArrowRight'){ e.preventDefault(); scroller.scrollBy({left: step(), behavior:'smooth'}); }
+        if(e.key === 'ArrowLeft'){ e.preventDefault(); scroller.scrollBy({left: -step(), behavior:'smooth'}); }
+      });
+    });
+
+    // 아바타 정렬 + 크기 동기화 (h1 상단에 맞추고, hero-actions 높이에 맞춰 정사각 크기 설정)
+    function syncAvatar() {
+      const kicker = document.getElementById('kicker');
+      const avatar = document.getElementById('avatar');
+      const title = document.getElementById('title');
+      const actions = document.getElementById('heroActions');
+      if (!avatar || !title) return;
+
+      // 1) h1과 수평 정렬: kicker 높이만큼 위쪽 여백 보정
+      const mb = kicker ? parseFloat(getComputedStyle(kicker).marginBottom || '0') : 0;
+      const offset = kicker ? kicker.offsetHeight + mb : 0;
+      avatar.style.marginTop = offset + 'px';
+
+      // 2) 크기 계산: h1의 top ~ hero-actions의 bottom 사이 높이
+      const relativeTop = title.offsetTop; // within titleBlock
+      const bottom = actions
+        ? (actions.offsetTop + actions.offsetHeight)
+        : (title.offsetTop + title.offsetHeight);
+
+      let size = Math.round(bottom - relativeTop);
+      // 안전한 범위로 클램프 (최소 140, 최대 340)
+      size = Math.max(140, Math.min(340, size + 8)); // +8은 약간의 여유
+
+      avatar.style.width = size + 'px';
+      avatar.style.height = size + 'px';
+    }
+    window.addEventListener('load', syncAvatar);
+    window.addEventListener('resize', syncAvatar);
+
+    // Mini To-Do
+    (function(){
+      const KEY = "weekly-todo-jg";
+      const MAX = 3;
+      const $ = (s, p=document)=>p.querySelector(s);
+      const list = $("#todoList");
+      const input = $("#todoInput");
+      const addBtn = $("#todoAdd");
+      const resetBtn = $("#todoReset");
+      const bar = $("#todoProgress");
+      const summary = $("#todoSummary");
+      let todos = JSON.parse(localStorage.getItem(KEY) || "[]");
+
+      function save(){ localStorage.setItem(KEY, JSON.stringify(todos)); }
+      function progress(){
+        const done = todos.filter(t=>t.done).length;
+        const pct = Math.round((done / Math.max(MAX, 1)) * 100);
+        bar.style.width = `${pct}%`;
+        summary.textContent = `${done}/${MAX} 완료`;
+      }
+      function makeItem(t, i){
+        const li = document.createElement("li");
+        li.className = `todo-item ${t.done?'done':''}`;
+        const badge = document.createElement("span");
+        badge.className = "pill";
+        badge.textContent = t.done ? "🌟" : "🫧";
+        const text = document.createElement("span");
+        text.className = `todo-text ${t.done?'done':''}`;
+        text.textContent = t.text;
+        const btnDone = document.createElement("button");
+        btnDone.className = "btn btn-sm btn-done";
+        btnDone.textContent = t.done ? "✔ 취소" : "✔ 완료";
+        const btnDel = document.createElement("button");
+        btnDel.className = "btn btn-sm btn-del ms-1";
+        btnDel.textContent = "✖ 삭제";
+        btnDone.onclick = ()=>{ todos[i].done = !todos[i].done; save(); render(); };
+        btnDel.onclick = ()=>{ todos.splice(i,1); save(); render(); };
+        li.append(badge,text,btnDone,btnDel);
+        return li;
+      }
+      function render(){
+        list.innerHTML = "";
+        todos.slice(0, MAX).forEach((t,i)=> list.appendChild(makeItem(t,i)));
+        progress();
+        input.value = "";
+      }
+      function add(){
+        const val = (input.value||"").trim();
+        if(!val) return;
+        if(todos.length >= MAX){ alert("최대 3개까지만 등록 가능합니다."); return; }
+        todos.push({text:val,done:false}); save(); render();
+      }
+      addBtn.onclick = add;
+      input.addEventListener("keydown", e=>{ if(e.key==="Enter") add(); });
+      resetBtn.onclick = ()=>{ if(confirm("이번 주 목록을 초기화할까요?")){ todos=[]; save(); render(); } };
+      render();
+    })();
+  </script>
+</body>
+</html>

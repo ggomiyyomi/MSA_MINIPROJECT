@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>소희의 취미 페이지</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Headline (한글) + Hanja fallback (CJK) -->
+  <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Serif+TC:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ===== Fonts ===== */
+@font-face{
+  font-family:'BMHANNAPro';
+  src:url('/fonts/BMHANNAPro.ttf') format('truetype');
+  font-display:swap;
+}
+
+html,body{ height:100%; }
+
+/* ===== Theme ===== */
+:root{
+  --nfx-red:#E50914;
+  --ink:#e5e7eb; --muted:#cbd5e1;
+  --bg1:#0b0b0d; --bg2:#111113;
+  --tile:#0f121a; --ring:rgba(255,255,255,.14);
+  --shadow:0 22px 60px rgba(0,0,0,.55);
+
+  /* Hanja fallback stack */
+  --font-hanja: 'Noto Serif JP','Noto Serif SC','Noto Serif TC',
+                'Hiragino Mincho ProN','Yu Mincho','MS Mincho',
+                'PMingLiU','SimSun', serif;
+}
+
+/* ===== Scrollbar 숨김(전역, 스크롤 동작은 유지) ===== */
+/* Firefox */
+* { scrollbar-width: none; }
+/* IE/Legacy Edge */
+* { -ms-overflow-style: none; }
+/* WebKit (Chrome/Safari/New Edge/Opera) */
+*::-webkit-scrollbar { display:none; width:0; height:0; }
+
+body{
+  font-family:'BMHANNAPro','Noto Sans KR',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(1200px 700px at 50% -10%, rgba(229,9,20,.18), transparent 60%),
+    linear-gradient(180deg,var(--bg1) 0%, var(--bg2) 60%, var(--bg1) 100%);
+  overflow-x:hidden;
+}
+section{ scroll-margin-top:80px; }
+
+/* ===== Navbar (투명→솔리드) ===== */
+.navbar{
+  position:sticky; top:0; z-index:1040;
+  background:transparent !important;
+  transition: background .25s ease, border-color .25s ease;
+  border-bottom:1px solid transparent;
+}
+.navbar.nav-solid{
+  background:rgba(17,17,19,.86)!important; backdrop-filter: blur(8px);
+  border-bottom-color: rgba(255,255,255,.08);
+}
+.navbar .navbar-brand, .navbar .nav-link{ color:#f3f4f6 !important; }
+
+/* ===== Hero (프로필 박스) ===== */
+.hero{
+  position:relative; min-height:64vh; display:flex; align-items:flex-end;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.25) 0%, rgba(0,0,0,.65) 70%),
+    url("images/sohee/b6852375.jpg") center/cover no-repeat; /* JS에서 랜덤 교체 */
+  border-bottom:1px solid rgba(255,255,255,.08);
+  box-shadow: inset 0 -60px 100px -60px rgba(0,0,0,.65);
+  isolation:isolate;
+}
+.hero-inner{ width:100%; max-width:1200px; margin:0 auto; padding:48px 16px; }
+.hero-meta{
+  display:flex; align-items:flex-start; gap:18px; flex-wrap:wrap;
+  text-shadow:0 2px 18px rgba(0,0,0,.5);
+}
+.avatar{
+  width:140px; height:140px; aspect-ratio:1/1;
+  border-radius:14px; object-fit:cover; display:block;
+  box-shadow: var(--shadow); border:2px solid rgba(255,255,255,.6);
+}
+.title-block h1{
+  margin:0; font-size:clamp(32px,6vw,64px); font-weight:900; letter-spacing:.02em;
+  font-family:'Song Myung', var(--font-hanja);
+}
+.title-block .kicker{
+  display:inline-flex; align-items:center; gap:8px; font-weight:900; color:#fff;
+  background: rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18); border-radius:999px; padding:.25rem .6rem;
+  margin-bottom:6px;
+  font-family:'Song Myung', var(--font-hanja);
+}
+.title-block .desc{ color:var(--muted); margin:.25rem 0 0; font-family:'Song Myung', var(--font-hanja); }
+
+.hero-actions{ margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; }
+.btn-cta{
+  display:inline-flex; align-items:center; gap:8px; font-weight:900;
+  background:var(--nfx-red); border:1px solid var(--nfx-red); color:#fff; border-radius:10px; padding:.6rem 1rem;
+  box-shadow:0 12px 30px rgba(0,0,0,.35);
+}
+.btn-ghost{
+  display:inline-flex; align-items:center; gap:8px; font-weight:900;
+  background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.18); color:#fff; border-radius:10px; padding:.6rem 1rem;
+}
+
+/* ===== 공통 섹션/패널 ===== */
+.section-head{ display:flex; align-items:center; gap:.6rem; margin:18px 0 12px; }
+.section-head .bar{
+  width:10px; height:26px; border-radius:6px;
+  background: linear-gradient(180deg,#f43f5e,#f59e0b);
+  box-shadow: 0 0 18px rgba(244,63,94,.35);
+}
+.section-head .title{
+  font-weight:900; letter-spacing:.02em;
+  font-family:'Song Myung', var(--font-hanja);
+}
+h1,h2,h3{ font-family:'Song Myung', var(--font-hanja); }
+
+.panel{
+  background: rgba(17,17,19,.7);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px; padding:16px; box-shadow:0 18px 44px rgba(0,0,0,.35);
+}
+
+/* ===== Gallery(무도삼경) ===== */
+.bg-body-secondary{
+  background:rgba(255,255,255,.04)!important; color:var(--ink);
+  border-top:1px solid rgba(255,255,255,.06);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.gallery-img{
+  aspect-ratio:4/3; object-fit:cover; border-radius:12px;
+  background:#0b0c10; border:1px solid rgba(255,255,255,.06);
+  box-shadow:0 12px 30px rgba(0,0,0,.35);
+  transition:transform .25s ease, filter .25s ease;
+}
+.gallery-img:hover{ transform:translateY(-3px); filter:brightness(1.06); }
+
+/* 뒤로가기 */
+.fixed-back{ position:fixed; left:16px; bottom:16px; z-index:1030; }
+
+/* ===== 수련장(#memories) ===== */
+#memories{
+  background:#111;
+  border-top: 4px solid #B7A891;
+  border-bottom: 4px solid #B7A891;
+  position: relative; overflow: hidden;
+}
+#memories img{ user-select:none; -webkit-user-drag:none; }
+.target-img img{ border: 3px solid #B7A891; border-radius:.5rem; transition: transform .3s; }
+.broken{ animation: vanish 1s forwards; }
+@keyframes vanish{ 0%{opacity:1; transform:scale(1) rotate(0);} 100%{opacity:0; transform:scale(.3) rotate(45deg);} }
+.katana-flame{
+  position:absolute; width:80px; height:8px;
+  background: linear-gradient(90deg, rgba(255,255,150,1), rgba(255,255,255,0));
+  filter: drop-shadow(0 0 10px rgba(255,255,120,.9));
+  border-radius:50% 0 0 50%; pointer-events:none; transform: rotate(-20deg);
+  animation: katanaFlame .6s ease-out forwards; z-index:9999;
+}
+@keyframes katanaFlame{ 0%{opacity:1; transform:scaleX(.5) rotate(-20deg);} 100%{opacity:0; transform:scaleX(2) rotate(-20deg);} }
+body{ cursor:none; }
+#katana-cursor{
+  position:fixed; width:64px; height:64px;
+  background:url("images/sohee/sword.png") no-repeat center/contain;
+  pointer-events:none; z-index:99999; transform-origin: bottom center;
+  animation:wobble .6s infinite ease-in-out;
+}
+@keyframes wobble{ 0%{transform:rotate(-8deg);} 50%{transform:rotate(8deg);} 100%{transform:rotate(-8deg);} }
+
+/* ===== 상세 카드 ===== */
+.bg-body-tertiary{
+  background: rgba(255,255,255,.06) !important;
+  color: var(--ink) !important;
+  border: 1px solid rgba(255,255,255,.10) !important;
+}
+.hobby-card{ transition: transform .3s ease; border-left:4px solid transparent; }
+.hobby-card:hover{ transform: translateY(-5px); border-left-color:#fff; }
+.hobby-icon{ font-size:1.5rem; transition: transform .3s ease; }
+.hobby-card:hover .hobby-icon{ transform: scale(1.1); }
+
+/* Flip 카드 */
+.flip-card { perspective: 1000px; height: 300px; }
+.flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.8s; transform-style: preserve-3d; }
+.flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
+.flip-card-front, .flip-card-back {
+  background: url("myMemory/mp3/image/frame.jpg") center/cover no-repeat;
+  position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 0.5rem;
+}
+.flip-card-front img { border-radius: 0.5rem; object-fit: cover; height: 100%; }
+.flip-card-back {
+  background: url("myMemory/mp3/image/frame.png") center/cover no-repeat; 
+  transform: rotateY(180deg); display: flex; align-items: center; justify-content: center; padding: 1rem;
+}
+.flip-card-back p { color: #B7A891 !important; font-family:'Song Myung', var(--font-hanja); font-size: 1.5rem; line-height: 1.8; }
+
+/* Footer */
+footer.bg-body-tertiary{
+  background: rgba(17,17,19,.86)!important; backdrop-filter: blur(6px);
+  border-top:1px solid rgba(255,255,255,.08);
+  color:#cbd5e1 !important;
+}
+
+/* 타입그래피 유틸 */
+.hanja{ font-family: var(--font-hanja) !important; }
+
+/* Responsive */
+@media (max-width:768px){ .row .col-md-6{ margin-bottom:2rem; } }
+
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav class="navbar navbar-expand-lg bg-body-tertiary shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="index.html">건재이조의 취미생활</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"
+              aria-controls="nav" aria-expanded="false" aria-label="토글 내비게이션">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div id="nav" class="collapse navbar-collapse">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="canva.html">Canvas</a></li>
+          <li class="nav-item"><a class="nav-link" href="video.html">Video</a></li>
+          <li class="nav-item"><a class="nav-link" href="music.html">Music</a></li>
+          <li class="nav-item"><a class="nav-link" href="kanban-board.html">Kanban</a></li>
+          <li class="nav-item"><a class="nav-link" href="CafeMap.html">Map</a></li>
+        </ul>
+        <div class="d-flex gap-2 align-items-center">
+          <a class="btn btn-danger btn-sm" href="signup.html">회원가입</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+
+
+  <!-- Hero (넷플릭스형 프로필 박스) -->
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="hero-meta">
+        <img src="images/sohee/p20250921.jpg" alt="프로필" class="avatar" id="avatar">
+        <div class="title-block" id="titleBlock">
+          <h1 id="title">Sohee Kim</h1>
+          <p class="desc mb-0">팔굽혀펴기로 근력을, 아쉬탕가로 유연성을, 독서로 상상력을 키우는 개발자 — 그것이 나다</p>
+          <div class="hero-actions" id="heroActions">
+            <a href="#about" class="btn-cta">소개 보기</a>
+            <a href="#hobbies" class="btn-ghost">무도삼경</a>
+            <a href="#memories" class="btn-ghost">수련법</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- About -->
+  <section id="about" class="py-5">
+    <div class="container">
+      <div class="section-head">
+        <span class="bar"></span><h2 class="title m-0">About</h2>
+      </div>
+      <div class="panel">
+        <p class="mb-0" style="font-family:'Song Myung', var(--font-hanja);">
+          일일천리(一日千里)의 마음가짐으로 무공 수련의 길을 걷고 있다. 매일 팔굽혀펴기로 내공을 축적하고,
+          아쉬탕가 심법으로 기혈을 순환시키며, 서책을 탐독하여 무학의 깊이를 더해간다. 작은 수련이 모여 큰 무공이 된다.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 무도삼경(Flip Gallery) -->
+  <section id="hobbies" class="py-5 bg-body-secondary">
+    <div class="container">
+      <div class="section-head">
+        <span class="bar"></span>
+        <h2 class="title m-0">무도삼경(<span class="hanja">武道三境</span>)</h2>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-sm-6 col-lg-4">
+          <div class="flip-card">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <img src="images/sohee/KakaoTalkPushUp.jpg" class="w-100 rounded-3 shadow-sm gallery-img" alt="카드1">
+              </div>
+              <div class="flip-card-back d-flex align-items-center justify-content-center rounded-3 shadow-sm">
+                <p class="text-white fw-bold text-center px-3">
+                  "땅을 밀어내는 한 번의 팔굽혀펴기에 강철같은 의지와 내공이 달렸다."
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-4">
+          <div class="flip-card">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <img src="images/sohee/KakaoTalk2.jpg" class="w-100 rounded-3 shadow-sm gallery-img" alt="카드2">
+              </div>
+              <div class="flip-card-back d-flex align-items-center justify-content-center rounded-3 shadow-sm">
+                <p class="text-white fw-bold text-center px-3">
+                  "고요한 호흡 속 한 자세에 심신의 균형이 잡히고 무아의 경지가 열린다."
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-4">
+          <div class="flip-card">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <img src="images/sohee/KakaoTalk3.jpg" class="w-100 rounded-3 shadow-sm gallery-img" alt="카드3">
+              </div>
+              <div class="flip-card-back d-flex align-items-center justify-content-center rounded-3 shadow-sm">
+                <p class="text-white fw-bold text-center px-3">
+                  "책장을 넘기는 손끝마다 천하의 지혜가 흘러들고 무림의 진리가 깃든다."
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 수련장(타겟 존) -->
+  <section id="memories" class="py-5 text-center">
+    <div class="container">
+      <h2 class="h4 fw-bold text-light mb-4">⚔️ 현대 무협인의 생존 수련법</h2>
+      <div class="d-flex flex-wrap justify-content-center gap-4">
+        <div class="target-img"><img src="images/sohee/mountain1.jpg" width="200" alt="타겟1" draggable="false"></div>
+        <div class="target-img"><img src="images/sohee/mountain2.jpg" width="200" alt="타겟2" draggable="false"></div>
+        <div class="target-img"><img src="images/sohee/mountain3.jpg" width="200" alt="타겟3" draggable="false"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 칼 커서 -->
+  <div id="katana-cursor"></div>
+
+  <!-- 상세 취미 -->
+  <section id="detailed-hobbies" class="py-5">
+    <div class="container">
+      <h2 class="h4 fw-bold mb-5 text-center" style="font-family:'Song Myung', var(--font-hanja);">무공수련의 삼대비법</h2>
+
+      <div class="row mb-5 align-items-center">
+        <div class="col-md-6 order-md-1">
+          <div class="hobby-card p-4 rounded-4 shadow-sm bg-body-tertiary">
+            <div class="d-flex align-items-center mb-3">
+              <div class="hobby-icon me-3 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width:50px;height:50px;">💪</div>
+              <h3 class="h5 fw-bold mb-0" style="font-family:'Song Myung', var(--font-hanja);">철신무공(<span class="hanja">鐵身武功</span>) - 팔굽혀펴기</h3>
+            </div>
+            <p class="mb-3" style="font-family:'Song Myung', var(--font-hanja); line-height:1.8;">
+              매일 새벽, 고요한 수련실에서 시작되는 내공 축적의 시간. 100개, 200개… 숫자가 늘어날 때마다 어제의 나를 넘는다.
+            </p>
+            <div class="progress mb-2" style="height:8px;">
+              <div class="progress-bar bg-primary" style="width:85%"></div>
+            </div>
+            <small class="text-muted">현재 레벨: 마존 (일일 200개) · 목표: 천마 (일일 300개)</small>
+          </div>
+        </div>
+        <div class="col-md-6 order-md-2"><img src="images/sohee/pushup2.png" class="img-fluid rounded-4 shadow" alt="팔굽혀펴기"></div>
+      </div>
+
+      <div class="row mb-5 align-items-center">
+        <div class="col-md-6 order-md-2">
+          <div class="hobby-card p-4 rounded-4 shadow-sm bg-body-tertiary">
+            <div class="d-flex align-items-center mb-3">
+              <div class="hobby-icon me-3 bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width:50px;height:50px;">🧘‍♀️</div>
+              <h3 class="h5 fw-bold mb-0" style="font-family:'Song Myung', var(--font-hanja);">심법수련(<span class="hanja">心法修練</span>) - 아쉬탕가</h3>
+            </div>
+            <p class="mb-3" style="font-family:'Song Myung', var(--font-hanja); line-height:1.8;">
+              호흡과 함께하는 몰입의 시간. 각 아사나마다 마음과 몸이 하나가 되는 균형의 수련.
+            </p>
+            <div class="d-flex gap-2 mb-2">
+              <span class="badge bg-success-subtle text-success">유연성 ⬆️</span>
+              <span class="badge bg-info-subtle text-info">균형감각 ⬆️</span>
+              <span class="badge bg-warning-subtle text-warning">집중력 ⬆️</span>
+            </div>
+            <small class="text-muted">수련 6개월차 · 좋아하는 시퀀스: 수리야 나마스카라</small>
+          </div>
+        </div>
+        <div class="col-md-6 order-md-1"><img src="images/sohee/yoga_lee.jpg" class="img-fluid rounded-4 shadow" alt="아쉬탕가"></div>
+      </div>
+
+      <div class="row mb-5 align-items-center">
+        <div class="col-md-6 order-md-1">
+          <div class="hobby-card p-4 rounded-4 shadow-sm bg-body-tertiary">
+            <div class="d-flex align-items-center mb-3">
+              <div class="hobby-icon me-3 bg-warning text-white rounded-circle d-flex align-items-center justify-content-center" style="width:50px;height:50px;">📚</div>
+              <h3 class="h5 fw-bold mb-0" style="font-family:'Song Myung', var(--font-hanja);">무학탐구(<span class="hanja">武學探究</span>) - 독서</h3>
+            </div>
+            <p class="mb-3" style="font-family:'Song Myung', var(--font-hanja); line-height:1.8;">
+              밤이 깊어가면 등불 아래 펼쳐지는 지혜의 바다. 무림의 진리를 책 속에서 탐구한다.
+            </p>
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <div class="text-center p-2 bg-primary-subtle rounded">
+                  <div class="fw-bold text-primary">📖 월 독서량</div>
+                  <div class="h6 mb-0">4-5권</div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="text-center p-2 bg-danger-subtle text-danger">
+                  <div class="fw-bold text-warning">⭐ 최애 장르</div>
+                  <div class="h6 mb-0">무협소설</div>
+                </div>
+              </div>
+            </div>
+            <small class="text-muted">최근: 「광마회귀」, 「달리기를 말할 때…」, 「스프링」</small>
+          </div>
+        </div>
+        <div class="col-md-6 order-md-2"><img src="images/sohee/gangmaBook.jpg" class="img-fluid rounded-4 shadow" alt="독서"></div>
+      </div>
+
+      <section id="media"></section>
+
+      <div class="text-center mt-5 p-4 bg-body-tertiary rounded-4">
+        <h3 class="h5 fw-bold mb-3" style="font-family:'Song Myung', var(--font-hanja);">수련자의 철학</h3>
+        <blockquote class="blockquote" style="font-family:'Song Myung', var(--font-hanja); font-size:1.2rem;">
+          "하루를 쌓고 또 쌓아 한 달이 되고, 한 달을 쌓고 또 쌓아 일 년이 된다.
+          작은 수련이 모여 큰 무공이 되고, 오늘의 노력이 내일의 실력이 된다."
+        </blockquote>
+        <footer class="blockquote-footer text-light mt-3">Hidden Master, <cite>Sohee Kim</cite></footer>
+      </div>
+    </div>
+  </section>
+
+  <footer class="mt-auto py-4 bg-body-tertiary text-center small text-body-secondary">
+    © <span id="year"></span> Team 건재이조
+  </footer>
+
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // 연도
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Nav 솔리드 전환
+    const nav = document.querySelector('.navbar');
+    const onScroll = ()=> nav.classList.toggle('nav-solid', window.scrollY > 24);
+    onScroll(); window.addEventListener('scroll', onScroll);
+
+    // Hero 배경 & 아바타 랜덤
+    const images = [
+      "images/sohee/b6852375.jpg",
+      "images/sohee/bba06.jpg",
+      "images/sohee/f85bef4c.jpg",
+    ];
+    const profiles = [
+      "images/sohee/p20250921.jpg",
+      "images/sohee/p054635533.jpg",
+      "images/sohee/p054635534.jpg",
+    ];
+    document.addEventListener("DOMContentLoaded", () => {
+      const hero = document.querySelector(".hero");
+      const gradient = 'linear-gradient(180deg, rgba(0,0,0,.25) 0%, rgba(0,0,0,.65) 70%)';
+      const bg = images[Math.floor(Math.random()*images.length)];
+      if(hero){
+        hero.style.backgroundImage = `${gradient}, url("${bg}")`;
+        hero.style.backgroundPosition = 'center';
+        hero.style.backgroundSize = 'cover';
+        hero.style.backgroundRepeat = 'no-repeat';
+      }
+      const avatar = document.getElementById('avatar');
+      const p = profiles[Math.floor(Math.random()*profiles.length)];
+      if(avatar) avatar.src = p;
+      syncAvatar();
+    });
+
+    // 아바타 크기 동기화 (제목 상단~액션 하단)
+    function syncAvatar() {
+      const kicker = document.getElementById('kicker');
+      const avatar = document.getElementById('avatar');
+      const title = document.getElementById('title');
+      const actions = document.getElementById('heroActions');
+      if (!avatar || !title) return;
+      const mb = kicker ? parseFloat(getComputedStyle(kicker).marginBottom || '0') : 0;
+      const offset = kicker ? kicker.offsetHeight + mb : 0;
+      avatar.style.marginTop = offset + 'px';
+      const top = title.offsetTop;
+      const bottom = actions ? (actions.offsetTop + actions.offsetHeight) : (title.offsetTop + title.offsetHeight);
+      let size = Math.round(bottom - top);
+      size = Math.max(140, Math.min(340, size + 8));
+      avatar.style.width = size + 'px';
+      avatar.style.height = size + 'px';
+    }
+    window.addEventListener('resize', syncAvatar);
+
+    // 수련장: 드래그/선택 방지 + 타격/잔상
+    const zone = document.getElementById("memories");
+    const targets = document.querySelectorAll(".target-img");
+    targets.forEach(t => t.dataset.hitCount = 0);
+
+    zone.addEventListener("dragstart", e => e.preventDefault());
+    zone.addEventListener("selectstart", e => e.preventDefault());
+    zone.addEventListener("mousemove", (e) => {
+      const flame = document.createElement("div");
+      flame.className = "katana-flame";
+      const rect = zone.getBoundingClientRect();
+      flame.style.left = (e.clientX - rect.left) + "px";
+      flame.style.top  = (e.clientY - rect.top)  + "px";
+      zone.appendChild(flame);
+      setTimeout(() => flame.remove(), 600);
+    });
+    zone.addEventListener("mousedown", (e) => {
+      targets.forEach(target => {
+        const rect = target.getBoundingClientRect();
+        if (e.clientX >= rect.left && e.clientX <= rect.right &&
+            e.clientY >= rect.top  && e.clientY <= rect.bottom) {
+          let n = parseInt(target.dataset.hitCount) + 1;
+          target.dataset.hitCount = n;
+          if (n >= 3) { target.classList.add("broken"); setTimeout(() => target.remove(), 1000); }
+        }
+      });
+    });
+
+    // 칼 커서
+    const katana = document.getElementById("katana-cursor");
+    document.addEventListener("mousemove", (e) => {
+      katana.style.left = (e.clientX - 32) + "px";
+      katana.style.top  = (e.clientY - 0) + "px";
+    });
+  </script>
+</body>
+</html>

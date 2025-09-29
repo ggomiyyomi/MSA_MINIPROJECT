@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ko" data-bs-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MUSIC PLAYLIST</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
+  <style>
+   /* ===============================
+   Font
+================================= */
+@font-face{
+  font-family:'BMHANNAPro';
+  src:url('/fonts/BMHANNAPro.ttf') format('truetype');
+  font-display:swap;
+}
+
+/* ===============================
+   Theme Vars
+================================= */
+:root{
+  --nfx-red:#E50914;
+  --ink:#e5e7eb;
+  --muted:#cbd5e1;
+  --bg1:#0b0b0d;
+  --bg2:#111113;
+}
+
+/* ===============================
+   Global / Scrollbars
+================================= */
+html,body{height:100%}
+html{scrollbar-width:none}
+html,body{-ms-overflow-style:none}
+body::-webkit-scrollbar{display:none}
+
+/* ===============================
+   Body
+================================= */
+body{
+  font-family:'BMHANNAPro','Noto Sans KR',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(1200px 700px at 50% -10%, rgba(229,9,20,.18), transparent 60%),
+    linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 60%, var(--bg1) 100%);
+}
+
+/* ===============================
+   Navbar
+================================= */
+.navbar{
+  position:sticky; top:0; z-index:1040;
+  background:transparent !important; transition: background .25s ease, border-color .25s ease;
+  border-bottom:1px solid transparent;
+}
+.navbar.nav-solid{
+  background:rgba(17,17,19,.86)!important; backdrop-filter: blur(8px);
+  border-bottom-color: rgba(255,255,255,.08);
+}
+.navbar .navbar-brand, .navbar .nav-link{ color:#f3f4f6 !important; }
+
+/* ===============================
+   Hero
+================================= */
+.hero{
+  min-height:40vh; display:grid; place-items:center; position:relative; color:#fff;
+  background:url("image/unsplash.jpg") center/cover no-repeat;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.hero::after{content:""; position:absolute; inset:0; background:rgba(0,0,0,.45);}
+.hero .inner{position:relative; z-index:1; text-align:center;}
+.avatar{width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid #fff}
+
+/* ===============================
+   Sections
+================================= */
+section.bg-body-secondary{background:rgba(255,255,255,.04)!important}
+
+/* ===============================
+   Player Controls
+================================= */
+.material-icons-round{font-size:36px;vertical-align:middle}
+.control-btn{
+  border:none; background:rgba(255,255,255,.06); padding:8px; border-radius:10px;
+  cursor:pointer; color:#fff;
+  transition:transform .2s ease, box-shadow .2s ease, opacity .2s ease;
+}
+.control-btn:hover{opacity:.9; transform:translateY(-2px); box-shadow:0 10px 30px rgba(0,0,0,.25);}
+.control-btn.active{
+  color:#fff; text-shadow:0 0 4px var(--nfx-red),0 0 10px rgba(229,9,20,.7);
+  box-shadow:0 0 0 2px rgba(229,9,20,.6) inset;
+}
+.control-btn:focus{outline:none; box-shadow:0 0 0 2px rgba(229,9,20,.6) inset;}
+
+/* Volume slider */
+#volumeControl{
+  appearance: none;          /* 표준 */
+  -webkit-appearance: none;  /* WebKit */
+  -moz-appearance: none;     /* Firefox */
+  width: 220px;
+  height: 6px;
+  border-radius: 999px;
+  background: #222;
+  outline: none;
+  border: 1px solid rgba(255,255,255,.12);
+}
+#volumeControl::-webkit-slider-runnable-track{
+  height:6px; border-radius:999px; background:linear-gradient(90deg,var(--nfx-red),#b20710) no-repeat;
+}
+#volumeControl::-moz-range-track{height:6px;border-radius:999px;background:#222}
+#volumeControl::-moz-range-progress{height:6px;border-radius:999px;background:linear-gradient(90deg,var(--nfx-red),#b20710)}
+#volumeControl::-webkit-slider-thumb{
+  -webkit-appearance:none; appearance:none; width:14px; height:24px; border-radius:4px;
+  background:#fff; border:2px solid #999; cursor:pointer; margin-top:-9px;
+}
+#volumeControl::-moz-range-thumb{
+  width:14px; height:24px; border-radius:4px; background:#fff; border:2px solid #999; cursor:pointer;
+}
+
+/* ===============================
+   Playlist
+================================= */
+.border-dashed{border-style:dashed!important; border-color:rgba(255,255,255,.25)!important; color:var(--muted)}
+.list-group-item{background:rgba(255,255,255,.04); color:var(--ink); border-color:rgba(255,255,255,.08)}
+
+/* ===============================
+   Footer
+================================= */
+footer.bg-body-tertiary{
+  background: rgba(17,17,19,.86)!important; backdrop-filter: blur(6px);
+  border-top:1px solid rgba(255,255,255,.08);
+  color:#cbd5e1 !important;
+}
+
+/* ===============================
+   Signup Button (Canvas와 동일)
+   - 캔버스 페이지의 .btn-primary 스타일을 그대로 복제
+================================= */
+.btn-primary{
+  background: var(--nfx-red) !important;
+  border-color: var(--nfx-red) !important;
+}
+.btn-primary:hover,
+.btn-primary:focus{
+  background: #bd0812 !important;
+  border-color: #bd0812 !important;
+}
+.btn-primary:active,
+.btn-primary.active,
+.show > .btn-primary.dropdown-toggle{
+  background: #a80710 !important;
+  border-color: #a80710 !important;
+}
+
+
+
+  </style>
+</head>
+<body>
+
+  <!-- Nav (공통) -->
+  <nav class="navbar navbar-expand-lg bg-body-tertiary shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="index.html">건재이조의 취미생활</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"
+              aria-controls="nav" aria-expanded="false" aria-label="토글 내비게이션">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div id="nav" class="collapse navbar-collapse">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="canva.html">Canvas</a></li>
+          <li class="nav-item"><a class="nav-link" href="video.html">Video</a></li>
+          <li class="nav-item"><a class="nav-link" href="music.html">Music</a></li>
+          <li class="nav-item"><a class="nav-link" href="kanban-board.html">Kanban</a></li>
+          <li class="nav-item"><a class="nav-link" href="CafeMap.html">Map</a></li>
+        </ul>
+        <div class="d-flex gap-2 align-items-center">
+          <a class="btn btn-primary btn-sm" href="signup.html">회원가입</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero" id="top">
+    <div class="inner">
+      <img src="https://picsum.photos/300?random=5" alt="프로필" class="avatar mb-3">
+      <h1 class="fw-bold">Play your story</h1>
+      <p class="lead mb-0">One good thing about music, when it hits you, you feel no pain.</p>
+    </div>
+  </header>
+
+  <section class="py-5" id="about">
+    <div class="container">
+      <h2 class="h4 fw-bold mb-3">About</h2>
+      <p>
+        음악을 기록하고, 또 누군가와 나누기 위한 작은 공간입니다.<br>
+        언젠가 이곳에 다른 사람들의 플레이리스트도 담겨, 서로의 음악 취향이 이어지길 바랍니다.
+      </p>
+    </div>
+  </section>
+
+  <!-- Player -->
+  <section class="py-5 bg-body-secondary" id="memories">
+    <div class="container text-center">
+      <h2 class="h4 fw-bold mb-3">MUSIC PLAYER</h2>
+      <canvas id="visualizer" width="600" height="200" class="w-100 mb-3"></canvas>
+
+      <div class="d-flex justify-content-center align-items-center gap-4 mb-3">
+        <button id="shuffleBtn" class="control-btn" aria-label="셔플">
+          <span class="material-icons-round">shuffle</span>
+        </button>
+        <button id="prevBtn" class="control-btn" aria-label="이전">
+          <span class="material-icons-round">skip_previous</span>
+        </button>
+        <button id="playPauseBtn" class="control-btn play-btn" aria-label="재생/일시정지">
+          <span id="playIcon" class="material-icons-round">play_arrow</span>
+        </button>
+        <button id="nextBtn" class="control-btn" aria-label="다음">
+          <span class="material-icons-round">skip_next</span>
+        </button>
+        <button id="repeatBtn" class="control-btn" aria-label="반복">
+          <span class="material-icons-round">repeat</span>
+        </button>
+      </div>
+
+      <div class="d-flex align-items-center justify-content-center gap-2 mb-3">
+        <label for="volumeControl" class="form-label mb-0 small">볼륨</label>
+        <input type="range" id="volumeControl" min="0" max="1" step="0.01" value="1">
+        <span id="volumeValue" class="small fw-semibold">100</span>
+      </div>
+
+      <p id="nowPlaying" class="fw-semibold"></p>
+      <audio id="audio" crossorigin="anonymous"></audio>
+    </div>
+  </section>
+
+  <!-- Playlist -->
+  <section class="py-5" id="media">
+    <div class="container">
+      <h2 class="h4 fw-bold mb-4">🎶 My Playlist</h2>
+      <div id="dropZone" class="p-5 border border-dashed text-center">🎵 여기에 음악 파일을 끌어다 놓으세요</div>
+      <ul id="myPlaylist" class="list-group mt-3"></ul>
+    </div>
+  </section>
+
+  <!-- Footer (공통) -->
+  <footer class="py-4 bg-body-tertiary text-center small text-body-secondary">
+    © <span id="year"></span> Team 건재이조
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const songs = [
+      { title:"31km",src:"music/31km.mp3"},{ title:"109",src:"music/109.mp3"},
+      { title:"airplay",src:"music/airplay.mp3"},{ title:"Always",src:"music/Always.mp3"},
+      { title:"BUSSTOP",src:"music/BUSSTOP.mp3"},{ title:"Can_I_Love",src:"music/Can_I_Love.mp3"},
+      { title:"Can't_Stop_Loving_You",src:"music/Can't_Stop_Loving_You.mp3"},
+      { title:"Charcoal_Just_for_you",src:"music/Charcoal_Just_for_you.mp3"},
+      { title:"CherryBerry",src:"music/CherryBerry.mp3"},{ title:"chungchun",src:"music/chungchun.mp3"},
+      { title:"dogundogun",src:"music/dogundogun.mp3"},{ title:"Dream",src:"music/Dream.mp3"},
+      { title:"goodByestar",src:"music/goodByestar.mp3"},{ title:"HOLIDAY",src:"music/HOLIDAY.mp3"},
+      { title:"HONEY",src:"music/HONEY.mp3"},{ title:"How_I_Feel",src:"music/How_I_Feel.mp3"},
+      { title:"IKNOW",src:"music/IKNOW.mp3"},{ title:"Ipray",src:"music/Ipray.mp3"},
+      { title:"letsGoSeeStar",src:"music/letsGoSeeStar.mp3"},{ title:"likelastday",src:"music/likelastday.mp3"},
+      { title:"living",src:"music/living.mp3"},{ title:"missyounight",src:"music/missyounight.mp3"},
+      { title:"MoonMoon",src:"music/MoonMoon.mp3"},{ title:"morning",src:"music/morning.mp3"},
+      { title:"mrKim",src:"music/mrKim.mp3"},{ title:"mung",src:"music/mung.mp3"},
+      { title:"neednangman",src:"music/neednangman.mp3"},{ title:"NightOff_sleep",src:"music/NightOff_sleep.mp3"},
+      { title:"onlyIKnow",src:"music/onlyIKnow.mp3"},{ title:"passible",src:"music/passible.mp3"},
+      { title:"PerhapsLove",src:"music/PerhapsLove.mp3"},{ title:"pullpush",src:"music/pullpush.mp3"},
+      { title:"RIDE",src:"music/RIDE.mp3"},{ title:"SAGA",src:"music/SAGA.mp3"},
+      { title:"sal",src:"music/sal.mp3"},{ title:"someDay",src:"music/someDay.mp3"},
+      { title:"starOne",src:"music/starOne.mp3"},{ title:"Stars",src:"music/Stars.mp3"},
+      { title:"sweety",src:"music/sweety.mp3"}
+    ];
+
+    const bgImages=[
+      "image/cassette.jpg","image/dodiunsplash.jpg","image/pexels-pixabay-164853.jpg",
+      "image/pexelsaaronsvd12544.jpg","image/pexelspixabay164967.jpg",
+      "image/pixabay159613.jpg","image/unsplash.jpg"
+    ];
+
+    let currentIndex=0,isPlaying=false,isShuffle=false,isRepeat=false;
+    let currentImage=null,targetImage=null,fadeAlpha=0,currentBgIndex=0,barColor="#ffffff7e";
+    const imageColors={
+      "image/cassette.jpg":"#ff578175","image/dodiunsplash.jpg":"#9a32b465",
+      "image/pexels-pixabay-164853.jpg":"#3f502d","image/pexelsaaronsvd12544.jpg":"#b6b6b659",
+      "image/pexelspixabay164967.jpg":"#dabf6883","image/pixabay159613.jpg":"#40847273",
+      "image/unsplash.jpg":"#ff408091"
+    };
+    let prevBarColor="#ffffff",targetBarColor="#ffffff";
+
+    const audio=document.getElementById("audio");
+    const nowPlaying=document.getElementById("nowPlaying");
+    const playPauseBtn=document.getElementById("playPauseBtn");
+    const prevBtn=document.getElementById("prevBtn");
+    const nextBtn=document.getElementById("nextBtn");
+    const playIcon=document.getElementById("playIcon");
+    const volumeControl=document.getElementById("volumeControl");
+    const volumeValue=document.getElementById("volumeValue");
+    const shuffleBtn=document.getElementById("shuffleBtn");
+    const repeatBtn=document.getElementById("repeatBtn");
+    const dropZone=document.getElementById("dropZone");
+    const myPlaylist=document.getElementById("myPlaylist");
+
+    const canvas=document.getElementById("visualizer");
+    const ctx=canvas.getContext("2d");
+    const audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    const analyser=audioCtx.createAnalyser();
+    const source=audioCtx.createMediaElementSource(audio);
+    source.connect(analyser); analyser.connect(audioCtx.destination);
+    analyser.fftSize=256;
+    const bufferLength=analyser.frequencyBinCount;
+    const dataArray=new Uint8Array(bufferLength);
+
+    function parseHexColor(hex){
+      hex=hex.replace('#','').trim();
+      if(hex.length===3){const r=parseInt(hex[0]+hex[0],16),g=parseInt(hex[1]+hex[1],16),b=parseInt(hex[2]+hex[2],16);return[r,g,b,1]}
+      if(hex.length===4){const r=parseInt(hex[0]+hex[0],16),g=parseInt(hex[1]+hex[1],16),b=parseInt(hex[2]+hex[2],16),a=parseInt(hex[3]+hex[3],16)/255;return[r,g,b,a]}
+      if(hex.length===6){const r=parseInt(hex.slice(0,2),16),g=parseInt(hex.slice(2,4),16),b=parseInt(hex.slice(4,6),16);return[r,g,b,1]}
+      if(hex.length===8){const r=parseInt(hex.slice(0,2),16),g=parseInt(hex.slice(2,4),16),b=parseInt(hex.slice(4,6),16),a=parseInt(hex.slice(6,8),16)/255;return[r,g,b,a]}
+      return[255,255,255,1]
+    }
+    function lerp(a,b,t){return a+(b-a)*t}
+
+    function loadSong(index){
+      audio.src=songs[index].src;
+      nowPlaying.textContent="지금 재생 중인 곡 : "+songs[index].title;
+      currentBgIndex=index%bgImages.length;
+      const img=new Image(); img.src=bgImages[currentBgIndex];
+      img.onload=()=>{
+        targetImage=img; fadeAlpha=0;
+        const imgSrc=bgImages[currentBgIndex].split("?")[0];
+        prevBarColor=targetBarColor;
+        targetBarColor=imageColors[imgSrc] || "#91919180";
+        if(!currentImage){ currentImage=img; barColor=targetBarColor; }
+      };
+    }
+    function setPlayIcon(playing){ playIcon.textContent = playing ? "pause" : "play_arrow"; }
+    function getRandomIndex(){ let r; do{ r=Math.floor(Math.random()*songs.length) }while(r===currentIndex); return r; }
+
+    playPauseBtn.addEventListener("click", async () => {
+      try{
+        await audioCtx.resume();
+        if(audio.paused){ await audio.play(); isPlaying=true; } else { audio.pause(); isPlaying=false; }
+        setPlayIcon(isPlaying);
+      }catch(e){ console.error(e); }
+    });
+    prevBtn.addEventListener("click",()=>{ currentIndex=(currentIndex-1+songs.length)%songs.length; loadSong(currentIndex); audio.play(); isPlaying=true; setPlayIcon(true); });
+    nextBtn.addEventListener("click",()=>{ currentIndex=(currentIndex+1)%songs.length; loadSong(currentIndex); audio.play(); isPlaying=true; setPlayIcon(true); });
+    shuffleBtn.addEventListener("click",()=>{ isShuffle=!isShuffle; shuffleBtn.classList.toggle("active",isShuffle); });
+    repeatBtn.addEventListener("click",()=>{ isRepeat=!isRepeat; repeatBtn.classList.toggle("active",isRepeat); });
+
+    audio.addEventListener("ended",()=>{
+      if(isRepeat){ audio.currentTime=0; audio.play(); }
+      else if(isShuffle){ currentIndex=getRandomIndex(); loadSong(currentIndex); audio.play(); }
+      else{ nextBtn.click(); }
+    });
+
+    function updateVolumeSlider(){
+      const value=parseFloat(volumeControl.value);
+      const percent=(value-volumeControl.min)/(volumeControl.max-volumeControl.min)*100;
+      volumeControl.style.background=`linear-gradient(to right, var(--nfx-red) 0%, #b20710 ${percent}%, transparent ${percent}%, transparent 100%)`;
+      volumeValue.textContent=Math.round(value*100);
+    }
+    volumeControl.addEventListener("input",(e)=>{ audio.volume=parseFloat(e.target.value); updateVolumeSlider(); });
+
+    document.addEventListener("dragover",(e)=>e.preventDefault());
+    document.addEventListener("drop",(e)=>e.preventDefault());
+    dropZone.addEventListener("dragover",(e)=>{e.preventDefault(); dropZone.classList.add("dragover");});
+    dropZone.addEventListener("dragleave",()=>dropZone.classList.remove("dragover"));
+    dropZone.addEventListener("drop",(e)=>{
+      e.preventDefault(); dropZone.classList.remove("dragover");
+      const files=e.dataTransfer.files;
+      Array.from(files).forEach(file=>{
+        if(file.type==="audio/mp3"||file.name.endsWith(".mp3")){
+          const url=URL.createObjectURL(file);
+          const title=file.name.replace(/\.mp3$/i,"");
+          const newSong={title,src:url};
+          songs.push(newSong);
+          const li=document.createElement("li");
+          li.className="list-group-item d-flex justify-content-between align-items-center";
+          li.textContent=title;
+          const playBtn=document.createElement("button");
+          playBtn.textContent="▶";
+          playBtn.className="btn btn-sm btn-outline-light";
+          playBtn.addEventListener("click",()=>{ currentIndex=songs.indexOf(newSong); loadSong(currentIndex); audio.play(); isPlaying=true; setPlayIcon(true); });
+          li.appendChild(playBtn);
+          myPlaylist.appendChild(li);
+          currentIndex=songs.length-1; loadSong(currentIndex); audio.play(); isPlaying=true; setPlayIcon(true);
+        }
+      })
+    });
+
+    function draw(){
+      requestAnimationFrame(draw);
+      analyser.getByteFrequencyData(dataArray);
+
+      if(currentImage){
+        fadeAlpha += 0.02;
+        ctx.globalAlpha=1;
+        ctx.drawImage(currentImage,0,0,canvas.width,canvas.height);
+      }else{
+        ctx.fillStyle="#111";
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+      }
+
+      if(targetImage){
+        if(fadeAlpha>=1){ fadeAlpha=1; currentImage=targetImage; targetImage=null; prevBarColor=targetBarColor; }
+        ctx.globalAlpha=fadeAlpha;
+        ctx.drawImage(currentImage,0,0,canvas.width,canvas.height);
+        ctx.globalAlpha=1;
+      }
+
+      const [r1,g1,b1,a1]=parseHexColor(prevBarColor);
+      const [r2,g2,b2,a2]=parseHexColor(targetBarColor);
+      const r=Math.round(lerp(r1,r2,fadeAlpha));
+      const g=Math.round(lerp(g1,g2,fadeAlpha));
+      const b=Math.round(lerp(b1,b2,fadeAlpha));
+      const a=lerp(a1,a2,fadeAlpha);
+      const currentBarColor=`rgba(${r},${g},${b},${a})`;
+
+      const barWidth=(canvas.width/bufferLength)*1.5; let x=0;
+      for(let i=0;i<bufferLength;i++){
+        const barHeight=dataArray[i];
+        ctx.fillStyle=currentBarColor;
+        ctx.fillRect(x,canvas.height-barHeight/2,barWidth,barHeight/2);
+        x+=barWidth+1;
+      }
+    }
+
+    loadSong(currentIndex);
+    updateVolumeSlider();
+    draw();
+  </script>
+</body>
+</html>

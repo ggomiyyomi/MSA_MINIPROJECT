@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>희정's 취미 페이지</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=f3c9f0ec8669c2333a8b6964f82e24ae&libraries=services"></script>
+
+  <style>
+   /* Fonts */
+@font-face{
+  font-family:'BMHANNAPro';
+  src:url('/fonts/BMHANNAPro.ttf') format('truetype');
+  font-display:swap;
+}
+
+html,body{ height:100%; }
+
+/* ===== Scrollbar 숨김(전역, 스크롤 동작 유지) ===== */
+/* Firefox */
+* { scrollbar-width: none; }
+/* IE/Legacy Edge */
+* { -ms-overflow-style: none; }
+/* WebKit (Chrome/Safari/New Edge/Opera) */
+*::-webkit-scrollbar { display:none; width:0; height:0; }
+
+/* Theme */
+:root{
+  --nfx-red:#E50914;
+  --ink:#e5e7eb; --muted:#cbd5e1;
+  --bg1:#0b0b0d; --bg2:#111113;
+  --tile:#0f121a; --ring:rgba(255,255,255,.14);
+  --shadow:0 22px 60px rgba(0,0,0,.55);
+}
+
+body{
+  font-family:'BMHANNAPro','Noto Sans KR',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(1200px 700px at 50% -10%, rgba(229,9,20,.18), transparent 60%),
+    linear-gradient(180deg,var(--bg1) 0%, var(--bg2) 60%, var(--bg1) 100%);
+  overflow-x:hidden; /* 가로 스크롤만 차단 */
+}
+
+/* Navbar (투명 → 스크롤 시 솔리드) */
+.navbar{
+  position:sticky; top:0; z-index:1040;
+  background:transparent !important; transition: background .25s ease, border-color .25s ease;
+  border-bottom:1px solid transparent;
+}
+.navbar.nav-solid{
+  background:rgba(17,17,19,.86)!important; backdrop-filter: blur(8px);
+  border-bottom-color: rgba(255,255,255,.08);
+}
+.navbar .navbar-brand, .navbar .nav-link{ color:#f3f4f6 !important; }
+
+/* Hero (프로필 박스 레이아웃) */
+.hero{
+  position:relative; min-height:64vh; display:flex; align-items:flex-end;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.25) 0%, rgba(0,0,0,.65) 70%),
+    url("/images/heejong/주방.png") center/cover no-repeat;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  box-shadow: inset 0 -60px 100px -60px rgba(0,0,0,.65);
+  isolation:isolate;
+}
+.hero-inner{ width:100%; max-width:1200px; margin:0 auto; padding:48px 16px; }
+.hero-meta{
+  display:flex; align-items:flex-start; gap:18px; flex-wrap:wrap;
+  text-shadow:0 2px 18px rgba(0,0,0,.5);
+}
+/* 정사각 아바타 — 크기는 JS 동기화 */
+.avatar{
+  width:140px; height:140px; aspect-ratio:1/1;
+  border-radius:14px; object-fit:cover; display:block;
+  box-shadow: var(--shadow); border:2px solid rgba(255,255,255,.6);
+}
+.title-block h1{ margin:0; font-size:clamp(32px,6vw,64px); font-weight:900; letter-spacing:.02em; }
+.title-block .kicker{
+  display:inline-flex; align-items:center; gap:8px; font-weight:900; color:#fff;
+  background: rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18); border-radius:999px; padding:.25rem .6rem;
+  margin-bottom:6px;
+}
+.title-block .desc{ color:var(--muted); margin:.25rem 0 0; }
+
+.hero-actions{ margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; }
+.btn-cta{
+  display:inline-flex; align-items:center; gap:8px; font-weight:900;
+  background:var(--nfx-red); border:1px solid var(--nfx-red); color:#fff; border-radius:10px; padding:.6rem 1rem;
+  box-shadow:0 12px 30px rgba(0,0,0,.35);
+}
+.btn-ghost{
+  display:inline-flex; align-items:center; gap:8px; font-weight:900;
+  background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.18); color:#fff; border-radius:10px; padding:.6rem 1rem;
+}
+
+/* 섹션/패널 */
+.section-head{ display:flex; align-items:center; gap:.6rem; margin:18px 0 12px; }
+.section-head .bar{
+  width:10px; height:26px; border-radius:6px;
+  background: linear-gradient(180deg,#f43f5e,#f59e0b);
+  box-shadow: 0 0 18px rgba(244,63,94,.35);
+}
+.section-head .title{ font-weight:900; letter-spacing:.02em; }
+.content-wrap, .container{ max-width:1200px; }
+
+.panel{
+  background: rgba(17,17,19,.7);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px; padding:16px; box-shadow:0 18px 44px rgba(0,0,0,.35);
+}
+
+/* 갤러리(다크 톤) */
+.bg-body-secondary{
+  background:rgba(255,255,255,.04)!important; color:var(--ink);
+  border-top:1px solid rgba(255,255,255,.06);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.gallery-img{
+  aspect-ratio:4/3; object-fit:cover; border-radius:12px;
+  background:#0b0c10; border:1px solid rgba(255,255,255,.06);
+  box-shadow:0 12px 30px rgba(0,0,0,.35);
+  transition:transform .25s ease, filter .25s ease;
+}
+.gallery-img:hover{ transform:translateY(-3px); filter:brightness(1.06); }
+
+/* 포인트 컬러 (제목/라벨) */
+.text-brown{ color:var(--nfx-red)!important; }
+
+/* CAFE 카드 (다크 글래스) */
+.cafe-section{
+  background: linear-gradient(135deg, #14161b 0%, #0f1116 60%, #0b0c10 100%);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px; padding:2rem; box-shadow:0 18px 44px rgba(0,0,0,.35);
+}
+.cafe-tags .badge{
+  background: rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.16);
+  color:#fff; font-size:.85rem; padding:.5em .9em;
+  backdrop-filter: blur(8px);
+}
+.cafe-photo img{
+  width:100%; height:auto; max-height:400px; object-fit:cover; border-radius:12px;
+  border:1px solid rgba(255,255,255,.08);
+  transition: transform .3s ease, filter .3s ease;
+}
+.cafe-photo img:hover{ transform:scale(1.04); filter:brightness(1.05); }
+
+.cafe-review{
+  font-size:1rem; font-style:italic; color:#f3f4f6;
+  background: rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+  padding:1rem; border-radius:12px;
+}
+
+/* 버튼/폼 (레드 포인트) */
+.btn-brown{ background:var(--nfx-red); color:#fff; border:1px solid var(--nfx-red); }
+.btn-brown:hover{ background:#c20b14; color:#fff; border-color:#c20b14; }
+.btn-primary{ background:var(--nfx-red); border-color:var(--nfx-red); }
+.btn-primary:hover{ background:#c20b14; border-color:#c20b14; }
+
+.cafe-form-card{
+  background: rgba(17,17,19,.7);
+  border:1px solid rgba(255,255,255,.08)!important;
+  border-radius:16px; padding:2rem;
+  transition: transform .2s, box-shadow .2s;
+}
+.cafe-form-card:hover{ transform: translateY(-3px); box-shadow:0 18px 44px rgba(0,0,0,.35); }
+
+.form-custom{
+  border-radius:10px; border:1px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.05); color:#f5f7fa;
+}
+.form-custom::placeholder{ color:#9aa4b2; }
+.form-custom:focus{
+  border-color:var(--nfx-red);
+  box-shadow:0 0 0 .2rem rgba(229,9,20,.25);
+  background:rgba(255,255,255,.07); color:#fff;
+}
+
+/* 리스트/스크롤(다크) — 스크롤바 숨김 */
+#searchResults{ padding-right:12px; border:none; background:transparent; }
+#searchResults .list-group-item{
+  background:transparent; color:#e5e7eb; border:none!important; padding:10px 8px;
+  border-radius:8px;
+}
+#searchResults .list-group-item:hover{ background:rgba(255,255,255,.06); }
+/* 개별 스크롤 영역의 막대도 숨김 (스크롤 동작 유지) */
+#searchResults{ overflow:auto; }
+#searchResults { scrollbar-width: none; -ms-overflow-style: none; }
+#searchResults::-webkit-scrollbar{ display:none; width:0; height:0; }
+
+.delete-icon{ font-size:1.2rem; transition: transform .2s ease, color .2s ease; }
+.delete-icon:hover{ transform: scale(1.2) rotate(-10deg); color:#ff6b6b; }
+
+/* 지도 박스 테두리 */
+#map-fixed, #selectMap{ border:1px solid rgba(255,255,255,.08); background:#0b0c10; }
+
+/* 고정 뒤로가기 버튼 */
+.fixed-back{ position: fixed; left: 16px; bottom: 16px; z-index: 1030; }
+
+/* Footer */
+footer.bg-body-tertiary{
+  background: rgba(17,17,19,.86)!important; backdrop-filter: blur(6px);
+  border-top:1px solid rgba(255,255,255,.08);
+  color:#cbd5e1 !important;
+}
+
+  </style>
+</head>
+
+<body>
+  <!-- Nav -->
+  <nav class="navbar navbar-expand-lg bg-body-tertiary shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="index.html">건재이조의 취미생활</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"
+              aria-controls="nav" aria-expanded="false" aria-label="토글 내비게이션">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div id="nav" class="collapse navbar-collapse">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="canva.html">Canvas</a></li>
+          <li class="nav-item"><a class="nav-link" href="video.html">Video</a></li>
+          <li class="nav-item"><a class="nav-link" href="music.html">Music</a></li>
+          <li class="nav-item"><a class="nav-link" href="kanban-board.html">Kanban</a></li>
+          <li class="nav-item"><a class="nav-link" href="CafeMap.html">Map</a></li>
+        </ul>
+        <div class="d-flex gap-2 align-items-center">
+          <a class="btn btn-primary btn-sm" href="signup.html">회원가입</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+
+
+  <!-- Hero (프로필 박스) -->
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="hero-meta">
+        <img src="/images/heejong/프로필.png" alt="프로필" class="avatar" id="avatar">
+        <div class="title-block" id="titleBlock">
+          <h1 id="title">희정's BAKING</h1>
+          <p class="desc mb-0">할 줄 아는 건 우선 쿠키 — 언젠가는 빵까지 정복 예정!</p>
+          <div class="hero-actions" id="heroActions">
+            <a href="#about" class="btn-cta"><i class="fa-solid fa-circle-info"></i> 소개 보기</a>
+            <a href="#hobbies" class="btn-ghost"><i class="fa-solid fa-images"></i> 갤러리</a>
+            <a href="#memories" class="btn-ghost"><i class="fa-solid fa-mug-hot"></i> 추천 카페</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 소개 -->
+  <section class="py-5" id="about">
+    <div class="container">
+      <div class="section-head">
+        <span class="bar"></span><h2 class="title m-0 text-brown">소개</h2>
+      </div>
+      <div class="panel">
+        <p class="mb-2">빵과 쿠키, 초콜릿 없으면 못살아서 직접 만들고싶은 빵순🍞입니다.</p>
+        <p class="mb-0">가끔 대량생산해서 나눠주는 걸 좋아해요. 지금은 쿠키 위주지만, 곧 빵도 도전!</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 쿠키 갤러리 -->
+  <section class="py-5 bg-body-secondary" id="hobbies">
+    <div class="container">
+      <div class="section-head">
+        <span class="bar"></span><h2 class="title m-0">Gallery</h2>
+      </div>
+      <div class="row g-4">
+        <div class="col-12 col-sm-6 col-lg-3"><img src="/images/heejong/거북이쿠키.png" class="w-100 gallery-img" alt="거북이쿠키"></div>
+        <div class="col-12 col-sm-6 col-lg-3"><img src="/images/heejong/쿠키공장.png" class="w-100 gallery-img" alt="쿠키공장"></div>
+        <div class="col-12 col-sm-6 col-lg-3"><img src="/images/heejong/마루쿠키.png" class="w-100 gallery-img" alt="마루쿠키"></div>
+        <div class="col-12 col-sm-6 col-lg-3"><img src="/images/heejong/정체모를곰돌이쿠키.png" class="w-100 gallery-img" alt="정체모를곰돌이쿠키"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recommend CAFE -->
+  <section class="py-5" id="memories">
+    <h1 class="h4 fw-bold mb-4 text-center">☕️ Recommend CAFE</h1>
+
+    <div id="cafe-list">
+      <!-- 예시 카드 -->
+      <div class="container cafe-section mb-4">
+        <div class="d-flex justify-content-between align-items-start">
+          <h2 class="h5 fw-bold mb-3">로스트앤베이크 가락점</h2>
+          <i class="fa-solid fa-trash-can text-danger delete-icon" style="cursor:pointer;"></i>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 cafe-tags mb-4">
+          <span class="badge rounded-pill">#서울송파</span>
+          <span class="badge rounded-pill">#양식</span>
+          <span class="badge rounded-pill">#타르트</span>
+          <span class="badge rounded-pill">#빵</span>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6 cafe-photo">
+            <h6 class="fw-semibold mb-2 text-brown">PHOTO</h6>
+            <div class="row g-3">
+              <div class="col-6"><img src="/images/heejong/타르트1.png" class="w-100 shadow-sm" alt="타르트1"></div>
+              <div class="col-6"><img src="/images/heejong/타르트2.png" class="w-100 shadow-sm" alt="타르트2"></div>
+            </div>
+          </div>
+          <div class="col-md-6 d-flex flex-column justify-content-between">
+            <div>
+              <h6 class="fw-semibold mb-2 text-brown">한줄후기</h6>
+              <div class="cafe-review">겉바속촉 그.자.체 🍓❤️</div>
+            </div>
+            <div>
+              <h6 class="fw-semibold mt-3 mb-2 text-brown">카페 위치 보기</h6>
+              <div id="map-fixed-addr" class="small text-muted mb-2">
+                <i class="fa-solid fa-location-dot me-1"></i><span></span>
+              </div>
+              <div id="map-fixed" style="width:100%;height:220px;border-radius:10px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 새 카페 등록 폼 -->
+    <div class="container mt-5" id="media">
+      <div class="card cafe-form-card shadow-sm border-0">
+        <div class="card-body">
+          <h2 class="h5 fw-bold mb-4 text-center text-brown">카페 추천하기</h2>
+          <form id="cafeForm">
+            <div class="mb-3">
+              <label class="form-label fw-semibold"><i class="fa-solid fa-store me-2 text-brown"></i>카페 이름</label>
+              <input type="text" class="form-control form-custom" id="cafeName" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold"><i class="fa-solid fa-tags me-2 text-brown"></i>태그 (쉼표로 구분)</label>
+              <input type="text" class="form-control form-custom" id="cafeTags" placeholder="#송파, #타르트">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold"><i class="fa-solid fa-image me-2 text-brown"></i>사진 업로드 (최대 2장)</label>
+              <input type="file" class="form-control form-custom" id="cafePhotos" accept="image/*" multiple>
+            </div>
+
+            <!-- 위치 검색/선택 -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold"><i class="fa-solid fa-map-location-dot me-2 text-brown"></i>위치 선택</label>
+              <div class="input-group mb-2">
+                <input type="text" id="placeKeyword" class="form-control form-custom" placeholder="예: 로스트앤베이크 가락점">
+                <button type="button" id="btnSearch" class="btn btn-brown">검색</button>
+              </div>
+              <div class="row g-3 mt-2">
+                <div class="col-md-7">
+                  <div id="selectMap" style="width:100%;height:260px;border-radius:10px;"></div>
+                </div>
+                <div class="col-md-5">
+                  <ul id="searchResults" class="list-group small" style="max-height:260px;overflow:auto;"></ul>
+                </div>
+              </div>
+              <div id="chosenAddress" class="small text-muted mt-2"></div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold"><i class="fa-solid fa-pen-nib me-2 text-brown"></i>한줄 후기</label>
+              <input type="text" class="form-control form-custom" id="cafeReview" required>
+            </div>
+
+            <!-- 숨김 주소 -->
+            <input type="hidden" id="cafeLat">
+            <input type="hidden" id="cafeLng">
+            <input type="hidden" id="cafeAddress">
+
+            <div class="text-center">
+              <button type="submit" class="btn btn-brown px-4 py-2 rounded-pill shadow-sm">
+                <i class="fa-solid fa-plus me-1"></i> 등록
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 이미지 모달 -->
+  <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content bg-transparent border-0 shadow-none">
+        <div class="modal-body text-center p-0">
+          <img id="modalImage" src="" class="img-fluid rounded shadow-lg" alt="원본 이미지">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="mt-auto py-4 bg-body-tertiary text-center small text-body-secondary">
+    © <span id="year"></span> Team 건재이조
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // 연도
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Nav 솔리드 전환
+    const nav = document.querySelector('.navbar');
+    const onScroll = ()=> nav.classList.toggle('nav-solid', window.scrollY > 24);
+    onScroll(); window.addEventListener('scroll', onScroll);
+
+    // 아바타 크기/정렬 동기화 (다른 페이지와 동일 로직)
+    function syncAvatar() {
+      const kicker = document.getElementById('kicker');
+      const avatar = document.getElementById('avatar');
+      const title = document.getElementById('title');
+      const actions = document.getElementById('heroActions');
+      if (!avatar || !title) return;
+
+      // h1과 수평정렬: kicker 높이만큼 위 여백 보정
+      const mb = kicker ? parseFloat(getComputedStyle(kicker).marginBottom || '0') : 0;
+      const offset = kicker ? kicker.offsetHeight + mb : 0;
+      avatar.style.marginTop = offset + 'px';
+
+      // 크기 = 제목 상단 ~ 액션 하단
+      const top = title.offsetTop;
+      const bottom = actions ? (actions.offsetTop + actions.offsetHeight) : (title.offsetTop + title.offsetHeight);
+      let size = Math.round(bottom - top);
+      size = Math.max(140, Math.min(340, size + 8)); // 안전범위
+      avatar.style.width = size + 'px';
+      avatar.style.height = size + 'px';
+    }
+    window.addEventListener('load', syncAvatar);
+    window.addEventListener('resize', syncAvatar);
+
+    // ===== 아래부터 CAFE 기능 =====
+    function getCafes() { return JSON.parse(localStorage.getItem('cafes')) || []; }
+    function saveCafes(cafes) { localStorage.setItem('cafes', JSON.stringify(cafes)); }
+    function addCafe(cafe) { const cs = getCafes(); cs.push(cafe); saveCafes(cs); }
+    function removeCafe(index) { const cs = getCafes(); cs.splice(index, 1); saveCafes(cs); }
+
+    function appendCafe(cafe, photos = [], index) {
+      const wrap = document.createElement('div');
+      wrap.className = 'container cafe-section mb-4';
+      const mapId = `map-${index}-${Date.now()}`;
+      wrap.innerHTML = `
+        <div class="d-flex justify-content-between align-items-start">
+          <h2 class="h5 fw-bold mb-3">${cafe.name}</h2>
+          <i class="fa-solid fa-trash-can text-danger delete-icon" style="cursor:pointer;"></i>
+        </div>
+        <div class="d-flex flex-wrap gap-2 cafe-tags mb-4">
+          ${(cafe.tags || []).map(t => `<span class="badge rounded-pill">#${t.replace(/^#/, '')}</span>`).join('')}
+        </div>
+        <div class="row g-4">
+          <div class="col-md-6 cafe-photo">
+            <h6 class="fw-semibold mb-2 text-brown">PHOTO</h6>
+            <div class="row g-3">
+              ${photos.map((p, i) => {
+                let colClass = 'col-6';
+                if (photos.length === 1) colClass = 'col-12';
+                else if (photos.length === 3) colClass = 'col-4';
+                return `<div class="${colClass}"><img src="${p}" class="w-100 shadow-sm rounded-3" alt="cafe photo"></div>`;
+              }).join('')}
+            </div>
+          </div>
+          <div class="col-md-6 d-flex flex-column justify-content-between">
+            <div>
+              <h6 class="fw-semibold mb-2 text-brown">한줄후기</h6>
+              <div class="cafe-review">${cafe.review || ''}</div>
+            </div>
+            <div>
+              <h6 class="fw-semibold mt-3 mb-2 text-brown">카페 위치 보기</h6>
+              ${cafe.address ? `<div class="small text-muted mb-2"><i class="fa-solid fa-location-dot me-1"></i>${cafe.address}</div>` : ''}
+              <div id="${mapId}" style="width:100%;height:220px;border-radius:10px;"></div>
+            </div>
+          </div>
+        </div>
+      `;
+      wrap.querySelector('.delete-icon').addEventListener('click', () => {
+        if (confirm('이 카페를 삭제할까요?')) { removeCafe(index); wrap.remove(); }
+      });
+      document.getElementById('cafe-list').appendChild(wrap);
+
+      if (cafe.lat && cafe.lng) {
+        const map = new kakao.maps.Map(document.getElementById(mapId), {
+          center: new kakao.maps.LatLng(cafe.lat, cafe.lng), level: 3
+        });
+        new kakao.maps.Marker({ position: new kakao.maps.LatLng(cafe.lat, cafe.lng), map });
+      }
+    }
+
+    function loadCafes() {
+      const cafes = getCafes();
+      cafes.forEach((c, i) => appendCafe(c, [], i));
+    }
+
+    function initFixedExample() {
+      const el = document.getElementById('map-fixed');
+      if (!el) return;
+      const map = new kakao.maps.Map(el, { center: new kakao.maps.LatLng(37.5665, 126.9780), level: 7 });
+      const places = new kakao.maps.services.Places();
+
+      places.keywordSearch('로스트앤베이크 가락점', (data, status) => {
+        if (status !== kakao.maps.services.Status.OK || !data.length) return;
+        const p = data[0];
+        const latlng = new kakao.maps.LatLng(p.y, p.x);
+        map.setLevel(3); map.setCenter(latlng);
+        new kakao.maps.Marker({ position: latlng, map });
+
+        const addrBox = document.querySelector('#map-fixed-addr span');
+        if (addrBox) addrBox.textContent = p.road_address_name || p.address_name || '';
+      });
+    }
+
+    function initForm() {
+      const selectMapEl = document.getElementById('selectMap');
+      const selectMap = new kakao.maps.Map(selectMapEl, {
+        center: new kakao.maps.LatLng(37.5665, 126.9780), level: 7
+      });
+      const places = new kakao.maps.services.Places();
+      const geocoder = new kakao.maps.services.Geocoder();
+      const resultsEl = document.getElementById('searchResults');
+      const keywordEl = document.getElementById('placeKeyword');
+      const chosenAddrEl = document.getElementById('chosenAddress');
+      let selMarker;
+
+      function setSelected(latlng) {
+        document.getElementById('cafeLat').value = latlng.getLat();
+        document.getElementById('cafeLng').value = latlng.getLng();
+        if (selMarker) selMarker.setMap(null);
+        selMarker = new kakao.maps.Marker({ position: latlng, map: selectMap });
+
+        geocoder.coord2Address(latlng.getLng(), latlng.getLat(), function (result, status) {
+          if (status === kakao.maps.services.Status.OK) {
+            const addr = (result[0].road_address && result[0].road_address.address_name) || result[0].address.address_name || '';
+            document.getElementById('cafeAddress').value = addr;
+            chosenAddrEl.textContent = addr;
+          }
+        });
+      }
+
+      kakao.maps.event.addListener(selectMap, 'click', (e) => { setSelected(e.latLng); });
+
+      function doSearch() {
+        const q = (keywordEl.value || '').trim();
+        resultsEl.innerHTML = '';
+        if (!q) return;
+        places.keywordSearch(q, (data, status) => {
+          if (status !== kakao.maps.services.Status.OK || !data.length) {
+            resultsEl.innerHTML = '<li class="list-group-item">검색 결과가 없어요.</li>'; return;
+          }
+          const bounds = new kakao.maps.LatLngBounds();
+          data.forEach(item => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item result-item';
+            li.innerHTML = `<strong>${item.place_name}</strong><br><small class="text-muted">${item.road_address_name || item.address_name || ''}</small>`;
+            li.addEventListener('click', () => {
+              const latlng = new kakao.maps.LatLng(item.y, item.x);
+              selectMap.setLevel(3); selectMap.panTo(latlng);
+              setSelected(latlng);
+            });
+            resultsEl.appendChild(li);
+            bounds.extend(new kakao.maps.LatLng(item.y, item.x));
+          });
+          selectMap.setBounds(bounds);
+        });
+      }
+      document.getElementById('btnSearch').addEventListener('click', doSearch);
+      keywordEl.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); doSearch(); } });
+
+      document.getElementById('cafeForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('cafeName').value.trim();
+        const tags = document.getElementById('cafeTags').value.split(',').map(t => t.trim()).filter(Boolean);
+        const review = document.getElementById('cafeReview').value.trim();
+        const lat = parseFloat(document.getElementById('cafeLat').value);
+        const lng = parseFloat(document.getElementById('cafeLng').value);
+        const address = document.getElementById('cafeAddress').value;
+
+        const files = document.getElementById('cafePhotos').files;
+        const photos = [];
+        for (let file of files) { photos.push(URL.createObjectURL(file)); }
+
+        const newCafe = { name, tags, review, lat, lng, address };
+        addCafe(newCafe);
+        appendCafe(newCafe, photos, getCafes().length - 1);
+
+        e.target.reset();
+        resultsEl.innerHTML = '';
+        chosenAddrEl.textContent = '';
+        if (selMarker) { selMarker.setMap(null); selMarker = null; }
+      });
+    }
+
+    // 이미지 모달
+    const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+    const modalImage = document.getElementById('modalImage');
+    document.addEventListener('click', function (e) {
+      if (e.target.tagName === 'IMG' && e.target.closest('.cafe-photo')) {
+        modalImage.src = e.target.src;
+        imageModal.show();
+      }
+    });
+
+    // 실행
+    document.addEventListener('DOMContentLoaded', () => {
+      // Nav / Hero
+      onScroll();
+      syncAvatar();
+
+      // 카페 기능
+      loadCafes();
+      initFixedExample();
+      initForm();
+    });
+  </script>
+</body>
+</html>

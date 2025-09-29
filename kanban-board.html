@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>취미 기록하기 (Kanban + Calendar)</title>
+
+<!-- Google Fonts (보조) -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- FullCalendar -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+
+<style>
+ /* ============= Fonts ============= */
+@font-face{
+  font-family:'BMHANNAPro';
+  src:url('/fonts/BMHANNAPro.ttf') format('truetype');
+  font-display:swap;
+}
+body{ font-family:"BMHANNAPro", Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+
+/* ============= Global + Netflix vibe ============= */
+:root{
+  --nf-red:#E50914;
+  --nf-red-dark:#b81d24;
+  --nf-ink:#0b0b0d;
+  --nf-ink-2:#111113;
+  --nf-ink-weak:#9aa4b2;
+}
+
+/* 스크롤바 숨김(스크롤 가능) */
+html, body { height:100%; }
+* { -ms-overflow-style:none; scrollbar-width:none; }
+*::-webkit-scrollbar { display:none; }
+
+/* 배경 (붉은 원 중앙 상단 정렬) */
+body{
+  background:
+    radial-gradient(1200px 700px at 50% -10%, rgba(229,9,20,.18), transparent 60%),
+    linear-gradient(180deg, #0b0b0d 0%, #111113 60%, #0b0b0d 100%);
+  color:#e5e7eb;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+a{ text-decoration:none; }
+
+/* ============= Navbar (투명→솔리드) ============= */
+.navbar{
+  position:sticky; top:0; z-index:1040;
+  background:transparent !important; transition: background .25s ease, border-color .25s ease;
+  border-bottom:1px solid transparent;
+}
+.navbar.nav-solid{
+  background:rgba(17,17,19,.86)!important; backdrop-filter: blur(8px);
+  border-bottom-color: rgba(255,255,255,.08);
+}
+.navbar .navbar-brand, 
+.navbar .nav-link{ color:#f3f4f6 !important; }
+
+/* ============= Section header bar ============= */
+.section-head{ display:flex; align-items:center; gap:.6rem; margin:10px 0 14px; }
+.section-head .bar{
+  width:10px; height:26px; border-radius:6px;
+  background: linear-gradient(180deg,#f43f5e,#f59e0b);
+  box-shadow: 0 0 18px rgba(244,63,94,.35);
+}
+.section-head .title{ font-weight:900; letter-spacing:.02em; }
+
+/* ============= Tabs (Netflix switch) ============= */
+#tab-buttons{
+  display:flex; align-items:center; justify-content:center; gap:12px;
+  margin-top:.5rem; flex-wrap:wrap;
+}
+.nf-tab{
+  appearance:none; border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.06);
+  color:#fff; padding:.55rem 1.1rem; border-radius:999px;
+  font-weight:900; letter-spacing:.02em;
+  transition:transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;
+}
+.nf-tab:hover{ transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.35); }
+.nf-tab.active{
+  background:var(--nf-red);
+  border-color:var(--nf-red);
+  box-shadow:0 18px 44px rgba(229,9,20,.35);
+}
+
+/* ============= Kanban ============= */
+.kanban-board{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:10px;
+}
+@media(max-width:900px){ .kanban-board{ grid-template-columns:1fr; } }
+
+.kanban-column{
+  border-radius:16px; padding:14px; min-height:160px; display:flex; flex-direction:column; color:#fff;
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 18px 44px rgba(0,0,0,.35);
+}
+.future{ background: linear-gradient(180deg,#3a3f46 0%,#2b2f35 100%); }   /* 차콜 */
+.current{ background: linear-gradient(180deg,#E50914 0%,#b50a12 100%); }   /* 넷플 빨강 */
+.past{ background: linear-gradient(180deg,#b81d24 0%,#7a1015 100%); }      /* 어두운 빨강 */
+
+.kanban-column h5{
+  text-align:center; margin-bottom:.6rem; font-weight:900;
+  display:flex; justify-content:center; gap:.5rem; align-items:center; font-size:1rem;
+}
+.kanban-column .count{
+  font-size:.85rem; padding:.2rem .6rem; border-radius:999px; background:rgba(255,255,255,.18);
+}
+
+.kanban-cards{
+  flex:1; display:flex; flex-direction:column; gap:6px; overflow:auto; padding-right:2px;
+}
+.kanban-card{
+  background:rgba(255,255,255,.10); border-radius:12px; padding:.7rem .8rem;
+  display:flex; justify-content:space-between; gap:.6rem;
+  border:1px solid rgba(255,255,255,.12);
+  cursor:grab; box-shadow:0 6px 18px rgba(0,0,0,.25);
+  transition:transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
+}
+.kanban-card:hover{ transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.35); }
+.kanban-card .title{ font-weight:800; color:#fff; word-break:break-word; font-size:.95rem; }
+.kanban-card .date{ font-size:.78rem; color:rgba(255,255,255,.85); margin-top:3px; }
+.kanban-card .actions{ display:flex; flex-direction:column; gap:4px; align-items:flex-end; }
+.kanban-card .btn-action{ background:transparent; border:none; color:#fff; opacity:.9; cursor:pointer; font-size:1.05rem; }
+.kanban-card.dragging{ opacity:.65; transform:scale(1.02); }
+.drag-over{ outline:2px dashed rgba(255,255,255,.22); }
+
+.add-btn{
+  border-radius:10px; padding:.35rem .75rem; font-size:.85rem; font-weight:800; margin-top:6px;
+  border:1px solid rgba(255,255,255,.22); background:rgba(255,255,255,.12); color:#fff;
+}
+.add-btn:hover{ filter:brightness(1.08); }
+
+/* ============= Calendar wrapper ============= */
+#calendar-panel{
+  background: rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:16px; padding:16px;
+  box-shadow:0 18px 44px rgba(0,0,0,.35);
+}
+
+/* ============= FullCalendar: Netflix Skin (다크 + 레드 포인트) ============= */
+.fc .fc-toolbar.fc-header-toolbar{ margin-bottom:.75rem; }
+.fc .fc-toolbar-title{
+  font-weight:900; letter-spacing:.02em; color:#fff;
+  text-shadow:0 6px 24px rgba(0,0,0,.45);
+}
+.fc .fc-button{
+  border-radius:999px; font-weight:900; border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.08); color:#fff;
+}
+.fc .fc-button:hover{ background:rgba(255,255,255,.12); }
+.fc .fc-button-primary:not(:disabled).fc-button-active,
+.fc .fc-button-primary:not(:disabled):active{
+  background:var(--nf-red); border-color:var(--nf-red);
+}
+
+/* 스크롤그리드 테두리 얇게 */
+.fc-theme-standard .fc-scrollgrid,
+.fc-theme-standard td, .fc-theme-standard th{
+  border-color:rgba(255,255,255,.08);
+}
+
+/* 요일 헤더 */
+.fc .fc-col-header{
+  background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+}
+.fc .fc-col-header-cell-cushion{
+  padding:.5rem 0; font-weight:900; color:#f3f4f6;
+}
+
+/* day grid 셀 */
+.fc .fc-daygrid-day{ background:rgba(255,255,255,.04); }
+.fc .fc-daygrid-day-number{ color:#e5e7eb; padding:.35rem .5rem; }
+.fc .fc-daygrid-day.fc-day-today{
+  background:rgba(229,9,20,.08);
+  box-shadow: inset 0 0 0 2px rgba(229,9,20,.45);
+}
+
+/* 이벤트(알약 스타일) */
+.fc .fc-daygrid-event{
+  line-height:1.1;
+  margin:1px 2px;
+  padding:.22rem .45rem;
+  border-radius:999px;
+  border:none;
+  font-weight:900;
+  color:#fff;
+  text-shadow:0 2px 10px rgba(0,0,0,.35);
+}
+
+/* 하루 당 이벤트 최대 줄수 고정 → 행 높이 일정 */
+.fc .fc-daygrid-day-events{ overflow:hidden; }
+
+/* more 링크를 넷플릭스 포인트로 */
+.fc .fc-more-link{
+  color:#fff; font-weight:900;
+  background:rgba(229,9,20,.15);
+  border-radius:999px; padding:0 .35rem;
+}
+.fc .fc-more-link:hover{ background:rgba(229,9,20,.25); }
+
+/* popover */
+.fc-popover{
+  background:rgba(17,17,19,.98);
+  border:1px solid rgba(255,255,255,.12);
+  color:#fff;
+  border-radius:12px;
+}
+.fc-popover .fc-popover-title{ font-weight:900; }
+.fc-popover .fc-daygrid-event{ border:none; }
+
+/* Footer */
+footer.bg-body-tertiary{
+  background: rgba(17,17,19,.86)!important; backdrop-filter: blur(6px);
+  border-top:1px solid rgba(255,255,255,.08);
+  color:#cbd5e1 !important;
+}
+
+/* ============= Signup Button (Canvas와 동일: 배경/호버만) ============= */
+.btn-primary{
+  background: var(--nf-red) !important;
+  border-color: var(--nf-red) !important;
+}
+.btn-primary:hover{
+  background: #bd0812 !important;
+  border-color: #bd0812 !important;
+}
+/* (주의) Canvas와 동일하게 하기 위해 :active/글꼴 커스텀은 의도적으로 제외 */
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="navbar navbar-expand-lg bg-body-tertiary shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="index.html">건재이조의 취미생활</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"
+            aria-controls="nav" aria-expanded="false" aria-label="토글 내비게이션">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div id="nav" class="collapse navbar-collapse">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="canva.html">Canvas</a></li>
+        <li class="nav-item"><a class="nav-link" href="video.html">Video</a></li>
+        <li class="nav-item"><a class="nav-link" href="music.html">Music</a></li>
+        <li class="nav-item"><a class="nav-link" href="kanban-board.html">Kanban</a></li>
+        <li class="nav-item"><a class="nav-link" href="CafeMap.html">Map</a></li>
+      </ul>
+      <div class="d-flex gap-2 align-items-center">
+        <a class="btn btn-primary btn-sm" href="signup.html">회원가입</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main class="container py-3 flex-grow-1">
+  <!-- Tabs -->
+  <div id="tab-buttons" class="mb-3">
+    <button class="nf-tab active" data-tab="kanban">Kanban Board</button>
+    <button class="nf-tab" data-tab="calendar">Calendar</button>
+  </div>
+
+  <!-- Kanban -->
+  <section id="kanban-section">
+    <div class="section-head">
+      <span class="bar"></span><h2 class="title m-0">Kanban Board</h2>
+    </div>
+
+    <div class="kanban-board">
+      <div class="kanban-column future" data-status="future">
+        <h5>앞으로 하고 싶은 취미 <span class="count">0</span></h5>
+        <div class="kanban-cards"></div>
+        <button class="add-btn">+ 추가</button>
+      </div>
+      <div class="kanban-column current" data-status="current">
+        <h5>요즘 빠져있는 취미 <span class="count">0</span></h5>
+        <div class="kanban-cards"></div>
+        <button class="add-btn">+ 추가</button>
+      </div>
+      <div class="kanban-column past" data-status="past">
+        <h5>했었던 취미 <span class="count">0</span></h5>
+        <div class="kanban-cards"></div>
+        <button class="add-btn">+ 추가</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Calendar -->
+  <section id="calendar-section" style="display:none;" class="mt-4">
+    <div class="section-head">
+      <span class="bar"></span><h2 class="title m-0">Calendar</h2>
+    </div>
+    <div id="calendar-panel">
+      <div id="fullcalendar"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="mt-auto py-4 bg-body-tertiary text-center small text-body-secondary">
+  © <span id="year"></span> Team 건재이조
+</footer>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+<script>
+  /* -------------------- 기본 -------------------- */
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Nav 솔리드 전환 (두 번째 페이지와 동일한 동작)
+  const nav = document.querySelector('.navbar');
+  const onScroll = ()=> nav.classList.toggle('nav-solid', window.scrollY > 24);
+  onScroll(); window.addEventListener('scroll', onScroll);
+
+  const columns = document.querySelectorAll('.kanban-column');
+  let calendar = null;
+  let calendarRendered = false;
+
+  /* -------------------- 저장/로드 -------------------- */
+  function saveData(){
+    try{
+      const data = {};
+      columns.forEach(col=>{
+        const status = col.dataset.status;
+        const cards = [...col.querySelectorAll('.kanban-card')].map((card, idx)=>({
+          title: card.querySelector('.title').textContent,
+          date: card.dataset.date,
+          status,
+          order: idx
+        }));
+        data[status] = cards;
+      });
+      localStorage.setItem('kanbanData', JSON.stringify(data));
+    }catch(e){
+      if(e.name === 'QuotaExceededError') alert('⚠️ 로컬 스토리지 용량이 가득 찼습니다!');
+      else console.error(e);
+    }
+  }
+
+  function loadData(){
+    const raw = localStorage.getItem('kanbanData');
+    if(!raw){
+      const today = new Date().toISOString().slice(0,10);
+      const sample = {
+        future: [{ title:'스쿠버다이빙 배우기', date:today, order:0 }, { title:'드럼 레슨', date:today, order:1 }],
+        current: [{ title:'헬스', date:today, order:0 }, { title:'기타 연습', date:today, order:1 }],
+        past: [{ title:'수영', date:today, order:0 }]
+      };
+      localStorage.setItem('kanbanData', JSON.stringify(sample));
+      return sample;
+    }
+    try{ return JSON.parse(raw); }catch{ return {}; }
+  }
+
+  /* -------------------- 카드 -------------------- */
+  function createCard(title, date=null){
+    if(!date) date = new Date().toISOString().slice(0,10);
+    const card = document.createElement('div');
+    card.className = 'kanban-card';
+    card.draggable = true;
+    card.dataset.date = date;
+    card.innerHTML = `
+      <div class="info">
+        <div class="title">${title}</div>
+        <div class="date">${date}</div>
+      </div>
+      <div class="actions">
+        <button class="btn-action edit" title="수정">✎</button>
+        <button class="btn-action delete" title="삭제">×</button>
+      </div>
+    `;
+    card.querySelector('.delete').addEventListener('click', ()=>{
+      removeCalendarEvent(card.dataset.date, card.querySelector('.title').textContent);
+      card.remove();
+      updateCountsAndSync();
+    });
+    card.querySelector('.edit').addEventListener('click', ()=>{
+      const oldTitle = card.querySelector('.title').textContent;
+      const oldDate = card.dataset.date;
+      const newTitle = prompt('취미 제목 수정:', oldTitle) || oldTitle;
+      const newDate = prompt('날짜(YYYY-MM-DD) 입력:', oldDate) || oldDate;
+      card.querySelector('.title').textContent = newTitle;
+      card.dataset.date = newDate;
+      card.querySelector('.date').textContent = newDate;
+      updateCountsAndSync();
+    });
+    card.addEventListener('dragstart', ()=> card.classList.add('dragging'));
+    card.addEventListener('dragend', ()=> { card.classList.remove('dragging'); updateCountsAndSync(); });
+    return card;
+  }
+
+  /* -------------------- 카드 추가 버튼 -------------------- */
+  document.querySelectorAll('.add-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const title = prompt('취미를 입력하세요:');
+      if(!title) return;
+      let date = prompt('날짜 (YYYY-MM-DD, 비우면 오늘):', new Date().toISOString().slice(0,10));
+      if(!date) date = new Date().toISOString().slice(0,10);
+      const column = btn.previousElementSibling;
+      const card = createCard(title, date);
+      column.appendChild(card);
+      updateCountsAndSync();
+    });
+  });
+
+  /* -------------------- DnD -------------------- */
+  document.querySelectorAll('.kanban-cards').forEach(area=>{
+    area.addEventListener('dragover', e=>{
+      e.preventDefault();
+      area.classList.add('drag-over');
+      const dragging = document.querySelector('.dragging');
+      if(!dragging) return;
+      const siblings = [...area.querySelectorAll('.kanban-card:not(.dragging)')];
+      const after = siblings.find(el=>{
+        const box = el.getBoundingClientRect();
+        return e.clientY <= box.top + box.height/2;
+      });
+      if(after) area.insertBefore(dragging, after);
+      else area.appendChild(dragging);
+    });
+    area.addEventListener('dragleave', ()=> area.classList.remove('drag-over'));
+    area.addEventListener('drop', ()=>{ area.classList.remove('drag-over'); updateCountsAndSync(); });
+  });
+
+  /* -------------------- Calendar -------------------- */
+  function getColorByStatus(status){
+    switch(status){
+      case 'future': return '#3a3f46';
+      case 'current': return '#E50914';
+      case 'past': return '#b81d24';
+      default: return '#4b5563';
+    }
+  }
+
+  function removeCalendarEvent(date, title){
+    if(!calendarRendered) return;
+    const evts = calendar.getEvents();
+    const hit = evts.find(ev => ev.startStr === date && ev.title === title);
+    if(hit) hit.remove();
+  }
+
+  function syncCalendarFromDOM(){
+    if(!calendarRendered) return;
+    calendar.batchRendering(()=>{
+      calendar.getEvents().forEach(ev=>ev.remove());
+      columns.forEach(col=>{
+        const status = col.dataset.status;
+        [...col.querySelectorAll('.kanban-card')].forEach((card, idx)=>{
+          const color = getColorByStatus(status);
+          calendar.addEvent({
+            title: card.querySelector('.title').textContent,
+            start: card.dataset.date,
+            backgroundColor: color,
+            borderColor: color,
+            textColor: '#fff',
+            extendedProps:{ status, order: idx, cardElement: card }
+          });
+        });
+      });
+    });
+  }
+
+  function updateCountsAndSync(){
+    columns.forEach(col=>{
+      const count = col.querySelectorAll('.kanban-card').length;
+      col.querySelector('.count').textContent = count;
+      col.style.minHeight = Math.max(160, count * 68 + 90) + 'px';
+    });
+    saveData();
+    syncCalendarFromDOM();
+  }
+
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const calendarEl = document.getElementById('fullcalendar');
+    calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      height: 650,
+      expandRows: true,
+      fixedWeekCount: true,
+      editable: true,
+      selectable: true,
+      locale: 'ko',
+      dayMaxEventRows: 1,
+      moreLinkClick: 'popover',
+      eventOrder: (a,b)=> ((a.extendedProps.order||0)-(b.extendedProps.order||0)),
+      eventDrop: info=>{
+        const event = info.event;
+        const newDate = event.startStr;
+        const card = event.extendedProps.cardElement;
+        if(card){
+          card.dataset.date = newDate;
+          card.querySelector('.date').textContent = newDate;
+          saveData();
+        }
+      },
+      dateClick: info=>{
+        const title = prompt('일정 제목을 입력하세요:');
+        if(!title) return;
+        const date = info.dateStr;
+        const status = (prompt('상태 입력 (future, current, past) — 기본 future:', 'future') || 'future').trim();
+        const colCards = document.querySelector(`.kanban-column[data-status="${status}"] .kanban-cards`);
+        if(!colCards){ alert('유효하지 않은 상태입니다.'); return; }
+        const card = createCard(title, date);
+        colCards.appendChild(card);
+        updateCountsAndSync();
+      },
+      datesSet: ()=>{ requestAnimationFrame(()=> calendar.updateSize()); }
+    });
+
+    // 저장된 카드 로드
+    const saved = loadData();
+    for(const [status, arr] of Object.entries(saved)){
+      const col = document.querySelector(`.kanban-column[data-status="${status}"] .kanban-cards`);
+      if(!col) continue;
+      arr.sort((a,b)=>a.order-b.order).forEach(c=> col.appendChild(createCard(c.title, c.date)));
+    }
+    updateCountsAndSync();
+  });
+
+  /* -------------------- 탭 전환 -------------------- */
+  document.querySelectorAll('#tab-buttons .nf-tab').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const tab = btn.dataset.tab;
+      document.querySelectorAll('#tab-buttons .nf-tab').forEach(b=> b.classList.toggle('active', b===btn));
+      document.getElementById('kanban-section').style.display = (tab==='kanban') ? 'block' : 'none';
+      document.getElementById('calendar-section').style.display = (tab==='calendar') ? 'block' : 'none';
+
+      if(tab==='calendar'){
+        if(!calendarRendered){
+          calendar.render();
+          calendarRendered = true;
+          syncCalendarFromDOM();
+        }else{
+          requestAnimationFrame(()=> calendar.updateSize());
+        }
+      }
+    });
+  });
+</script>
+</body>
+</html>

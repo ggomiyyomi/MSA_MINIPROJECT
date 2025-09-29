@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>나의 취미 & 추억 – 원페이지</title>
+
+  <!-- Bootstrap / Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Kakao Maps -->
+  <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=f3c9f0ec8669c2333a8b6964f82e24ae&libraries=services"></script>
+
+  <style>
+    /* ===============================
+   Fonts & Theme Tokens (Netflix-ish)
+================================== */
+@font-face{
+  font-family: 'BMHANNAPro';
+  src: url('/fonts/BMHANNAPro.ttf') format('truetype');
+  font-display: swap;
+}
+:root{
+  --nf-red:#E50914;
+  --nf-red-dark:#b81d24;
+  --ink:#e5e7eb;
+  --muted:#cbd5e1;
+  --tile:#0f121a;
+  --ring:0 22px 60px rgba(0,0,0,.55);
+  --glass: rgba(255,255,255,.06);
+  --glass-border: rgba(255,255,255,.16);
+}
+
+/* ===============================
+   Base + Scrollbar 제거
+================================== */
+html,body{ height:100%; }
+body{
+  font-family:"BMHANNAPro","Noto Sans KR",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(1200px 700px at 50% -10%, rgba(229,9,20,.18), transparent 60%),
+    linear-gradient(180deg, #0b0b0d 0%, #111113 60%, #0b0b0d 100%);
+}
+/* 스크롤바 숨기기(스크롤 기능 유지) */
+html, body{ -ms-overflow-style: none; scrollbar-width: none; }
+html::-webkit-scrollbar, body::-webkit-scrollbar{ display:none; width:0; height:0; }
+
+a{ text-decoration:none; }
+
+/* ===============================
+   Netflix-style Navbar
+================================== */
+.navbar{
+  position:sticky; top:0; z-index:1040;
+  background:transparent !important; transition: background .25s ease, border-color .25s ease;
+  border-bottom:1px solid transparent;
+}
+.navbar.nav-solid{
+  background:rgba(17,17,19,.86)!important; backdrop-filter: blur(8px);
+  border-bottom-color: rgba(255,255,255,.08);
+}
+.navbar .navbar-brand, 
+.navbar .nav-link{ color:#f3f4f6 !important; }
+
+
+/* ===============================
+   Section Title
+================================== */
+h2.section-title{
+  font-weight:900; letter-spacing:.02em;
+  text-align:center; color:#fff;
+  text-shadow:0 10px 30px rgba(0,0,0,.55);
+}
+
+/* ===============================
+   Map & Right List
+================================== */
+#map{
+  width:100%; height:70vh; border-radius:16px;
+  box-shadow: var(--ring);
+  background:#000;
+  border:1px solid rgba(255,255,255,.08);
+}
+
+.scroll-area{
+  max-height:70vh; overflow:auto;
+  background: linear-gradient(160deg, #14161b 0%, #0f1116 60%, #0b0c10 100%);
+  border:1px solid var(--glass-border);
+  border-radius:16px; padding:1.2rem;
+  box-shadow: var(--ring);
+}
+/* 스크롤 영역도 스크롤바 숨김 */
+.scroll-area{ -ms-overflow-style:none; scrollbar-width:none; }
+.scroll-area::-webkit-scrollbar{ display:none; }
+
+.cafe-card{
+  background: var(--glass);
+  border:1px solid var(--glass-border);
+  border-radius:14px; padding:1rem 1.1rem;
+  transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+  color:#f5f7fa;
+}
+.cafe-card:hover{ transform: translateY(-3px); }
+.cafe-card.active-card{
+  background: rgba(229,9,20,.12);
+  border-color: var(--nf-red);
+  box-shadow: 0 12px 34px rgba(229,9,20,.28);
+}
+
+.overlay-label{
+  opacity:1; transform: translateY(10px);
+  animation: fadeUp .25s ease forwards;
+}
+@keyframes fadeUp{
+  from{opacity:0; transform:translateY(16px)}
+  to{opacity:1; transform:translateY(10px)}
+}
+
+/* ===============================
+   Buttons (Netflix accent)
+================================== */
+.btn-nf-ghost{
+  background: rgba(255,255,255,.08);
+  color:#fff; border:1px solid rgba(255,255,255,.22);
+  border-radius:10px; padding:.48rem .9rem; font-weight:800;
+  transition:.18s ease; box-shadow:0 10px 28px rgba(0,0,0,.25);
+}
+.btn-nf-ghost:hover{ background: rgba(255,255,255,.12); }
+
+.btn-nf-red{
+  background: var(--nf-red);
+  color:#fff; border:1px solid var(--nf-red); border-radius:10px;
+  padding:.48rem .9rem; font-weight:900;
+  box-shadow:0 14px 36px rgba(229,9,20,.28);
+  transition:.18s ease;
+}
+.btn-nf-red:hover{
+  background: var(--nf-red-dark);
+  border-color: var(--nf-red-dark);
+  color:#fff;
+}
+
+/* ===============================
+   Footer
+================================== */
+footer.bg-body-tertiary{
+  background: rgba(17,17,19,.86)!important; color:#cbd5e1 !important;
+  border-top:1px solid rgba(255,255,255,.10);
+}
+
+/* ===============================
+   Signup Button (Canvas와 완전 동일)
+   - 캔버스 페이지 .btn-primary 컬러/호버/액티브/폰트/굵기 복제
+================================== */
+.btn-primary{
+  background: var(--nf-red) !important;
+  border-color: var(--nf-red) !important;
+}
+.btn-primary:hover,
+.btn-primary:focus{
+  background: #bd0812 !important;
+  border-color: #bd0812 !important;
+}
+.btn-primary:active,
+.btn-primary.active,
+.show > .btn-primary.dropdown-toggle{
+  background: #a80710 !important;
+  border-color: #a80710 !important;
+}
+
+  </style>
+</head>
+<body>
+  <!-- Nav -->
+  <nav class="navbar navbar-expand-lg bg-body-tertiary shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="index.html">건재이조의 취미생활</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"
+              aria-controls="nav" aria-expanded="false" aria-label="토글 내비게이션">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div id="nav" class="collapse navbar-collapse">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="canva.html">Canvas</a></li>
+          <li class="nav-item"><a class="nav-link" href="video.html">Video</a></li>
+          <li class="nav-item"><a class="nav-link" href="music.html">Music</a></li>
+          <li class="nav-item"><a class="nav-link" href="kanban-board.html">Kanban</a></li>
+          <li class="nav-item"><a class="nav-link" href="CafeMap.html">Map</a></li>
+        </ul>
+        <div class="d-flex gap-2 align-items-center">
+          <a class="btn btn-primary btn-sm" href="signup.html">회원가입</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <section id="guestbook" class="container py-5">
+    <h2 class="section-title mb-4">🥯🧁🥐 Bakery CAFE 🥨🍪🍰</h2>
+
+    <div class="d-flex justify-content-end gap-2 mb-3">
+      <button id="searchBtn" class="btn-nf-ghost">
+        <i class="fa-solid fa-location-crosshairs me-1"></i> 현 지도에서 검색
+      </button>
+      <button id="myLocationBtn" class="btn-nf-red">
+        <i class="fa-solid fa-street-view me-1"></i> 내 위치
+      </button>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div id="map"></div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="scroll-area shadow-sm">
+          <h4 class="fw-bold mb-3"><i class="fa-solid fa-mug-hot me-2"></i>Bakery CAFE</h4>
+          <div id="cafeList" class="d-flex flex-column gap-3"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="mt-auto py-4 bg-body-tertiary text-center small text-body-secondary">
+    © <span id="year"></span> Team 건재이조
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Footer year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Kakao Maps logic
+    kakao.maps.load(function () {
+      const map = new kakao.maps.Map(document.getElementById('map'), {
+        center: new kakao.maps.LatLng(37.5665, 126.9780),
+        level: 5
+      });
+
+      const places = new kakao.maps.services.Places();
+      const cafeListEl = document.getElementById('cafeList');
+
+      let markerInfoList = [];
+      let openOverlay = null;
+      let selectedCard = null;
+      let currentSelectedMarker = null;
+
+      function clearMap() {
+        markerInfoList.forEach(m => m.marker.setMap(null));
+        markerInfoList = [];
+        cafeListEl.innerHTML = '';
+        if (openOverlay) { openOverlay.setMap(null); openOverlay = null; }
+        selectedCard = null;
+        currentSelectedMarker = null;
+      }
+
+      function activateCard(card, overlay, marker, smallImg, bigImg) {
+        // 이전 선택 마커 복귀
+        if (currentSelectedMarker && currentSelectedMarker !== marker) {
+          currentSelectedMarker.setImage(smallImg);
+        }
+        marker.setImage(bigImg);
+        currentSelectedMarker = marker;
+
+        // 오버레이 교체
+        if (openOverlay) openOverlay.setMap(null);
+        overlay.setMap(map);
+        openOverlay = overlay;
+
+        // 포커스
+        map.panTo(marker.getPosition());
+
+        // 카드 활성화
+        if (selectedCard) selectedCard.classList.remove('active-card');
+        card.classList.add('active-card');
+        selectedCard = card;
+
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      function addMarkerWithCard(place) {
+        const smallImg = new kakao.maps.MarkerImage(
+          'images/heejong/smallmarker.png',
+          new kakao.maps.Size(30, 30),
+          { offset: new kakao.maps.Point(15, 30) }
+        );
+        const bigImg = new kakao.maps.MarkerImage(
+          'images/heejong/bigmarker.png',
+          new kakao.maps.Size(45, 45),
+          { offset: new kakao.maps.Point(22, 45) }
+        );
+
+        const marker = new kakao.maps.Marker({
+          position: new kakao.maps.LatLng(place.y, place.x),
+          map: map,
+          image: smallImg
+        });
+
+        // Overlay (다크 글래스)
+        const overlayContent = document.createElement('div');
+        overlayContent.className = 'overlay-label';
+        overlayContent.style.cssText = `
+          font-size:12px; font-weight:800; color:#fff; white-space:nowrap;
+          padding:6px 10px; background:rgba(17,17,19,.92);
+          border:1px solid rgba(255,255,255,.12); border-radius:10px;
+          box-shadow:0 8px 22px rgba(0,0,0,.45);
+          transform: translateY(-4px);
+        `;
+        overlayContent.textContent = place.place_name;
+
+        const overlay = new kakao.maps.CustomOverlay({
+          content: overlayContent,
+          position: marker.getPosition(),
+          yAnchor: -0.3,
+          map: null   // 최초엔 숨김
+        });
+
+        // Card
+        const card = document.createElement('div');
+        card.className = 'cafe-card';
+        card.innerHTML = `
+          <h6 class="fw-bold mb-1">${place.place_name}</h6>
+          <hr class="my-2" style="border-color:rgba(255,255,255,.1)">
+          <div class="small" style="color:#cfd6e2">
+            <div><strong class="me-1" style="color:#fff">주소</strong> ${place.road_address_name || '정보 없음'}</div>
+            <div><strong class="me-1" style="color:#fff">지번</strong> ${place.address_name || '정보 없음'}</div>
+            <div><strong class="me-1" style="color:#fff">전화</strong> ${place.phone || '정보 없음'}</div>
+          </div>
+        `;
+
+        kakao.maps.event.addListener(marker, 'click', () => {
+          activateCard(card, overlay, marker, smallImg, bigImg);
+        });
+        card.addEventListener('click', () => {
+          activateCard(card, overlay, marker, smallImg, bigImg);
+        });
+
+        cafeListEl.appendChild(card);
+        markerInfoList.push({ marker, overlay, place, card });
+      }
+
+      function searchAt(center) {
+        clearMap();
+        places.keywordSearch('베이커리 카페', function (data, status) {
+          if (status === kakao.maps.services.Status.OK) {
+            data.forEach(place => addMarkerWithCard(place));
+          }
+        }, { location: center, radius: 2000 });
+      }
+
+      function searchAtCenter() {
+        const center = map.getCenter();
+        searchAt(center);
+      }
+
+      function goToMyLocation() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function (pos) {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+            const loc = new kakao.maps.LatLng(lat, lon);
+            map.setCenter(loc);
+            searchAt(loc);
+          }, function(){
+            alert('현재 위치를 가져올 수 없어요. 지도를 움직여 검색해보세요!');
+            searchAtCenter();
+          });
+        } else {
+          alert('GPS를 지원하지 않는 브라우저입니다 😢');
+          searchAtCenter();
+        }
+      }
+
+      // 초기 로딩: 내 위치 → 검색
+      goToMyLocation();
+
+      // UI buttons
+      document.getElementById('searchBtn').addEventListener('click', searchAtCenter);
+      document.getElementById('myLocationBtn').addEventListener('click', goToMyLocation);
+    });
+  </script>
+</body>
+</html>
